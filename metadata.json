@@ -1,0 +1,6 @@
+{
+  "name": "SupaTable Studio",
+  "description": "Kompleksowy menedżer tabel, danych, importu plików oraz zdjęć w Supabase z pełnym CRUD i obsługą Storage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
