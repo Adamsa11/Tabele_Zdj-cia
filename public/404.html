@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SupaTable Studio</title>
+    <script>
+      // Przekierowanie SPA dla GitHub Pages
+      // Jeśli użytkownik odświeży stronę na podścieżce, przekieruj do strony głównej
+      var segmentCount = 0;
+      var loc = window.location;
+      loc.replace(
+        loc.protocol + '//' + loc.hostname + (loc.port ? ':' + loc.port : '') +
+        loc.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
+        loc.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+        (loc.search ? '&q=' + loc.search.slice(1).replace(/&/g, '~and~') : '') +
+        loc.hash
+      );
+    </script>
+  </head>
+  <body style="font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #030712; color: #f3f4f6;">
+    <div style="text-align: center;">
+      <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #10b981;">SupaTable Studio</h1>
+      <p style="color: #9ca3af; font-size: 0.875rem;">Przekierowywanie do aplikacji...</p>
+    </div>
+  </body>
+</html>

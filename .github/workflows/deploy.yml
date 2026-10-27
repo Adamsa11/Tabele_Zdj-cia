@@ -1,0 +1,53 @@
+name: Wdróż na GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# Nadaj uprawnienia wymagane do publikacji na GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Zezwól na jedno równoległe wdrożenie
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobierz kod źródłowy (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Skonfiguruj Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Zainstaluj zależności
+        run: npm install
+
+      - name: Zbuduj aplikację produkcyjną
+        run: npm run build
+
+      - name: Skonfiguruj Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prześlij artefakt strony (dist/)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Wdróż na GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
