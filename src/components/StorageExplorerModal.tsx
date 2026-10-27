@@ -161,17 +161,17 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
   const filteredFiles = files.filter(f => f.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-5xl h-[85vh] flex flex-col bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="relative w-full max-w-5xl h-[85vh] flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl text-[#161616]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/60">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/70">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2 rounded-lg bg-orange-50 text-[#F36F21] border border-orange-200">
               <HardDrive className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-100">Supabase Storage Explorer</h2>
-              <p className="text-xs text-slate-400">Przeglądaj, przesyłaj i pobieraj zdjęcia oraz multimedia</p>
+              <h2 className="text-base font-bold text-[#161616] font-heading">Supabase Storage Explorer</h2>
+              <p className="text-xs text-gray-500">Przeglądaj, przesyłaj i pobieraj zdjęcia oraz multimedia sprzętu</p>
             </div>
           </div>
 
@@ -179,14 +179,14 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
             <button
               onClick={() => activeBucket && loadFiles(activeBucket)}
               disabled={loading}
-              className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
               title="Odśwież"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Zamknij"
             >
               <X className="w-5 h-5" />
@@ -197,15 +197,15 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
         {/* Content Body: Sidebar + Main File Grid */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left: Buckets list */}
-          <div className="w-64 border-r border-slate-800 bg-slate-950/30 p-3 flex flex-col">
+          <div className="w-64 border-r border-gray-200 bg-gray-50/50 p-3 flex flex-col">
             <div className="flex items-center justify-between mb-2 px-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-600">
                 Buckety Storage ({buckets.length})
               </span>
               <button
                 type="button"
                 onClick={() => setShowNewBucket(!showNewBucket)}
-                className="p-1 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
+                className="p-1 text-gray-400 hover:text-[#F36F21] hover:bg-orange-50 rounded transition-colors"
                 title="Dodaj lub utwórz nowy bucket"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -214,19 +214,19 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
 
             {/* Inline New Bucket Form */}
             {showNewBucket && (
-              <div className="p-2 mb-2 bg-slate-950 border border-slate-800 rounded-lg space-y-1.5">
+              <div className="p-2.5 mb-2 bg-white border border-gray-200 rounded-xl space-y-1.5 shadow-2xs">
                 <input
                   type="text"
-                  placeholder="nazwa-bucketa (np. images)"
+                  placeholder="nazwa-bucketa (np. wozki)"
                   value={newBucketName}
                   onChange={e => setNewBucketName(e.target.value)}
-                  className="w-full px-2 py-1 text-xs font-mono bg-slate-900 border border-slate-800 rounded text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-2 py-1 text-xs font-mono bg-[#F9F9F9] border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21]"
                 />
                 <div className="flex items-center justify-end gap-1">
                   <button
                     type="button"
                     onClick={() => setShowNewBucket(false)}
-                    className="px-2 py-0.5 text-[10px] text-slate-400 hover:text-white"
+                    className="px-2 py-0.5 text-[10px] text-gray-500 hover:text-gray-900"
                   >
                     Anuluj
                   </button>
@@ -234,7 +234,7 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                     type="button"
                     onClick={handleCreateBucket}
                     disabled={creatingBucket || !newBucketName.trim()}
-                    className="px-2.5 py-1 text-[11px] font-medium bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white rounded transition-colors"
+                    className="px-2.5 py-1 text-[11px] font-semibold bg-[#F36F21] hover:bg-[#df5d12] disabled:opacity-40 text-white rounded transition-colors shadow-2xs"
                   >
                     {creatingBucket ? 'Tworzenie...' : 'Dodaj bucket'}
                   </button>
@@ -251,15 +251,15 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                     onClick={() => setActiveBucket(b.name)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left ${
                       isActive
-                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                        : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                        ? 'bg-orange-50 text-[#F36F21] border border-orange-200 font-semibold shadow-2xs'
+                        : 'text-gray-600 hover:bg-white hover:text-gray-900'
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <Folder className="w-4 h-4 shrink-0 text-slate-500" />
+                      <Folder className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#F36F21]' : 'text-gray-400'}`} />
                       <span className="truncate font-mono">{b.name}</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 shrink-0 font-mono">
+                    <span className="text-[10px] text-gray-400 shrink-0 font-mono">
                       {b.isPublic ? 'public' : 'private'}
                     </span>
                   </button>
@@ -267,20 +267,20 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
               })}
 
               {buckets.length === 0 && (
-                <div className="p-3 text-xs text-slate-400 text-center space-y-2 bg-slate-900/50 rounded-lg border border-slate-800/80 m-1">
-                  <p className="text-[11px] text-slate-300 font-medium">Brak bucketów w Supabase</p>
-                  <p className="text-[10px] text-slate-400">Twoja baza nie posiada jeszcze utworzonego magazynu plików.</p>
+                <div className="p-3 text-xs text-gray-500 text-center space-y-2 bg-white rounded-xl border border-gray-200 m-1 shadow-2xs">
+                  <p className="text-[11px] text-gray-800 font-semibold">Brak bucketów w Supabase</p>
+                  <p className="text-[10px] text-gray-500">Twoja baza nie posiada jeszcze utworzonego magazynu plików.</p>
                   <button
                     type="button"
                     onClick={() => handleQuickCreateDefault('images')}
-                    className="w-full px-2.5 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors shadow-sm"
+                    className="w-full px-2.5 py-1.5 text-xs bg-[#F36F21] hover:bg-[#df5d12] text-white rounded-lg font-semibold transition-colors shadow-sm"
                   >
                     + Aktywuj bucket "images"
                   </button>
                   <button
                     type="button"
                     onClick={copyStorageSql}
-                    className="w-full px-2 py-1 text-[10px] bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-700"
+                    className="w-full px-2 py-1 text-[10px] bg-white hover:bg-gray-50 text-gray-700 rounded border border-gray-300 font-medium"
                   >
                     Kopiuj SQL (Utwórz w Supabase)
                   </button>
@@ -289,19 +289,19 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
             </div>
 
             {/* Storage RLS Help button */}
-            <div className="pt-2 border-t border-slate-800/60">
+            <div className="pt-2 border-t border-gray-200">
               <button
                 type="button"
                 onClick={copyStorageSql}
-                className="w-full text-center text-[10px] text-slate-400 hover:text-emerald-400 transition-colors py-1 flex items-center justify-center gap-1"
+                className="w-full text-center text-[10px] text-gray-500 hover:text-[#F36F21] transition-colors py-1 flex items-center justify-center gap-1 font-medium"
               >
-                {copiedStorageSql ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                {copiedStorageSql ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3 text-gray-400" />}
                 <span>{copiedStorageSql ? 'Skopiowano SQL Storage!' : 'Kopiuj SQL uprawnień Storage'}</span>
               </button>
             </div>
 
             {/* Quick Upload Button */}
-            <div className="pt-3 border-t border-slate-800">
+            <div className="pt-3 border-t border-gray-200">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -313,7 +313,7 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading || !activeBucket}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#F36F21] hover:bg-[#df5d12] disabled:opacity-50 rounded-lg transition-colors shadow-sm"
               >
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 <span>{uploading ? 'Wysyłanie...' : 'Prześlij zdjęcia'}</span>
@@ -322,14 +322,14 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
           </div>
 
           {/* Right: Files Grid */}
-          <div className="flex-1 flex flex-col overflow-hidden bg-slate-900/60">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[#F9F9F9]">
             {/* Toolbar */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-slate-800 bg-slate-950/20">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span>Magazyn:</span>
-                <span className="font-semibold text-slate-200">{activeBucket || 'Brak'}</span>
-                <span>·</span>
-                <span className="font-mono">{filteredFiles.length} plików</span>
+                <span className="font-semibold text-gray-900 font-mono">{activeBucket || 'Brak'}</span>
+                <span className="text-gray-300">·</span>
+                <span className="font-mono text-gray-600">{filteredFiles.length} plików</span>
               </div>
 
               <div className="w-64">
@@ -338,7 +338,7 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                   placeholder="Filtruj po nazwie pliku..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-1.5 text-xs bg-[#F9F9F9] border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white"
                 />
               </div>
             </div>
@@ -346,15 +346,15 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
             {/* Grid Area */}
             <div className="flex-1 overflow-y-auto p-6">
               {loading ? (
-                <div className="flex flex-col items-center justify-center h-64 text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-2" />
+                <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#F36F21] mb-2" />
                   <p className="text-xs">Ładowanie plików z bucketa {activeBucket}...</p>
                 </div>
               ) : filteredFiles.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-center border-2 border-dashed border-slate-800 rounded-xl p-8">
-                  <ImageIcon className="w-12 h-12 text-slate-400 mb-3" />
-                  <h4 className="text-sm font-medium text-slate-300">Ten bucket jest pusty</h4>
-                  <p className="text-xs text-slate-400 max-w-sm mt-1">
+                <div className="flex flex-col items-center justify-center h-64 text-center border-2 border-dashed border-gray-200 bg-white rounded-2xl p-8 shadow-2xs">
+                  <ImageIcon className="w-12 h-12 text-gray-300 mb-3" />
+                  <h4 className="text-sm font-semibold text-gray-800">Ten bucket jest pusty</h4>
+                  <p className="text-xs text-gray-500 max-w-sm mt-1">
                     Prześlij zdjęcia lub pliki multimedialne za pomocą przycisku w lewym panelu lub przeciągając je tutaj.
                   </p>
                 </div>
@@ -365,11 +365,11 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                     return (
                       <div
                         key={file.name}
-                        className="group relative flex flex-col bg-slate-950 border border-slate-800/80 rounded-lg overflow-hidden hover:border-slate-700 transition-all shadow-sm"
+                        className="group relative flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-orange-300 transition-all shadow-2xs"
                       >
                         {/* Thumbnail */}
                         <div
-                          className="relative aspect-video w-full bg-slate-900 flex items-center justify-center overflow-hidden cursor-pointer"
+                          className="relative aspect-video w-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer"
                           onClick={() => onShowLightbox(file.publicUrl, file.name)}
                         >
                           <img
@@ -378,16 +378,16 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"><rect fill="%231e293b" width="200" height="150"/><text fill="%2394a3b8" font-family="sans-serif" font-size="12" dy="4" font-weight="bold" x="50%" y="50%" text-anchor="middle">Plik / Obraz</text></svg>';
+                              (e.currentTarget as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"><rect fill="%23f1f5f9" width="200" height="150"/><text fill="%2394a3b8" font-family="sans-serif" font-size="12" dy="4" font-weight="bold" x="50%" y="50%" text-anchor="middle">Plik / Obraz</text></svg>';
                             }}
                           />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onShowLightbox(file.publicUrl, file.name);
                               }}
-                              className="p-1.5 bg-slate-900/80 text-white rounded hover:bg-slate-800"
+                              className="p-1.5 bg-white/90 text-gray-900 rounded-md hover:bg-white shadow-xs"
                               title="Powiększ"
                             >
                               <Eye className="w-4 h-4" />
@@ -397,18 +397,18 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
 
                         {/* File Details */}
                         <div className="p-2.5 flex flex-col gap-1.5">
-                          <p className="text-xs font-medium text-slate-200 truncate" title={file.name}>
+                          <p className="text-xs font-semibold text-gray-800 truncate" title={file.name}>
                             {file.name}
                           </p>
-                          <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                          <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
                             <span>{file.size ? `${Math.round(file.size / 1024)} KB` : 'Plik'}</span>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleCopy(file.publicUrl)}
-                                className="p-1 text-slate-400 hover:text-emerald-400 transition-colors"
+                                className="p-1 text-gray-400 hover:text-[#F36F21] transition-colors"
                                 title="Kopiuj link"
                               >
-                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                               </button>
                               {onSelectImage && (
                                 <button
@@ -416,14 +416,14 @@ export const StorageExplorerModal: React.FC<StorageExplorerModalProps> = ({
                                     onSelectImage(file.publicUrl);
                                     onClose();
                                   }}
-                                  className="px-1.5 py-0.5 text-[10px] bg-emerald-600 hover:bg-emerald-500 text-white rounded transition-colors"
+                                  className="px-2 py-0.5 text-[10px] bg-[#F36F21] hover:bg-[#df5d12] text-white font-semibold rounded transition-colors shadow-2xs"
                                 >
                                   Wybierz
                                 </button>
                               )}
                               <button
                                 onClick={() => handleDelete(file.name)}
-                                className="p-1 text-slate-400 hover:text-rose-400 transition-colors"
+                                className="p-1 text-gray-400 hover:text-[#CC0000] transition-colors"
                                 title="Usuń plik"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />

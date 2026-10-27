@@ -11,8 +11,6 @@ import {
   HardDrive,
   Activity,
   Layers,
-  ArrowRight,
-  ShieldCheck,
   CheckCircle2
 } from 'lucide-react';
 
@@ -66,20 +64,20 @@ export const StarterHub: React.FC<StarterHubProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-900/60 p-6 md:p-10">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-[#F9F9F9] p-6 md:p-10">
       <div className="max-w-4xl mx-auto w-full space-y-6">
         {/* Banner powitalny */}
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-slate-950 border border-emerald-500/30 shadow-xl relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-white border border-orange-200/90 shadow-sm relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#F36F21] text-xs font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Połączono z instancją Supabase</span>
               </div>
-              <h2 className="text-xl font-bold text-slate-100 font-sans tracking-tight">
-                Twoja baza Supabase jest podłączona i gotowa!
+              <h2 className="text-xl font-bold text-[#161616] font-heading tracking-tight">
+                Twoja baza danych jest podłączona i gotowa!
               </h2>
-              <p className="text-xs text-slate-400 max-w-xl font-mono">
+              <p className="text-xs text-gray-500 max-w-xl font-mono">
                 {config.url} · klucz: {config.key.slice(0, 16)}...
               </p>
             </div>
@@ -87,7 +85,7 @@ export const StarterHub: React.FC<StarterHubProps> = ({
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={onOpenDiagnostics}
-                className="px-3 py-2 text-xs font-medium text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 rounded-xl transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 text-xs font-semibold text-[#F36F21] bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-xl transition-colors flex items-center gap-1.5"
               >
                 <Activity className="w-3.5 h-3.5" />
                 <span>Diagnostyka bazy</span>
@@ -96,31 +94,31 @@ export const StarterHub: React.FC<StarterHubProps> = ({
           </div>
         </div>
 
-        {/* Sekcja: Dlaczego nie ma jeszcze tabel i bucketów */}
-        <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 space-y-2">
-          <div className="flex items-center gap-2 text-slate-200 font-semibold">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+        {/* Sekcja: Informacja o stanie bazy */}
+        <div className="p-4 rounded-xl bg-white border border-gray-200 text-xs text-gray-700 space-y-2 shadow-2xs">
+          <div className="flex items-center gap-2 text-[#161616] font-semibold">
+            <Sparkles className="w-4 h-4 text-[#F36F21]" />
             <span>Projekt jest nowy: w bazie nie ma jeszcze zdefiniowanych tabel ani bucketów Storage</span>
           </div>
-          <p className="text-slate-400 leading-relaxed text-[11px]">
+          <p className="text-gray-500 leading-relaxed text-[11px]">
             Supabase to pełny PostgreSQL w chmurze. Aby tabela pojawiła się w aplikacji i można było dodawać/edytować/importować rekordy oraz zdjęcia, wybierz jedną z 3 poniższych metod:
           </p>
         </div>
 
         {/* Karta 1: Rekomendowane rozwiązanie: 1-Click SQL Seed */}
-        <div className="p-6 rounded-2xl bg-slate-950 border border-emerald-500/40 shadow-lg space-y-4 relative">
+        <div className="p-6 rounded-2xl bg-white border-2 border-orange-300 shadow-sm space-y-4 relative">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-[#F36F21] border border-orange-200">
                   Rekomendowane
                 </span>
-                <h3 className="text-sm font-semibold text-slate-100">
+                <h3 className="text-sm font-bold text-[#161616]">
                   Szybki start: Automatyczny skrypt SQL (Tabela + Storage + Uprawnienia RLS)
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
-                Jednorazowy kod SQL, który w 5 sekund utworzy w Twojej bazie tabelę <code className="text-emerald-300">produkty</code> ze zdjęciami, skonfiguruje pełne uprawnienia RLS (odczyt, dodawanie, edycja, usuwanie) oraz utworzy publiczny bucket <code className="text-emerald-300">images</code> na multimedia.
+              <p className="text-xs text-gray-600 leading-relaxed max-w-2xl">
+                Jednorazowy kod SQL, który w 5 sekund utworzy w Twojej bazie tabelę <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">produkty</code> ze zdjęciami, skonfiguruje pełne uprawnienia RLS (odczyt, dodawanie, edycja, usuwanie) oraz utworzy publiczny bucket <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">images</code> na multimedia.
               </p>
             </div>
           </div>
@@ -129,9 +127,9 @@ export const StarterHub: React.FC<StarterHubProps> = ({
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={handleCopySql}
-              className="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-md flex items-center gap-2"
+              className="px-4 py-2.5 text-xs font-semibold text-white bg-[#F36F21] hover:bg-[#df5d12] rounded-xl transition-all shadow-sm flex items-center gap-2 active:translate-y-px"
             >
-              {copiedSql ? <Check className="w-4 h-4 text-emerald-200" /> : <Copy className="w-4 h-4" />}
+              {copiedSql ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
               <span>{copiedSql ? 'Skopiowano gotowy kod SQL!' : 'Kopiuj gotowy skrypt SQL (Tabele + Storage)'}</span>
             </button>
 
@@ -139,15 +137,15 @@ export const StarterHub: React.FC<StarterHubProps> = ({
               href={sqlEditorUrl}
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2.5 text-xs font-semibold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-xl transition-colors flex items-center gap-2 shadow-2xs"
             >
               <span>Otwórz Supabase SQL Editor</span>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-gray-500" />
             </a>
 
             <button
               onClick={() => setShowSqlPreview(!showSqlPreview)}
-              className="px-3 py-2 text-xs text-slate-400 hover:text-slate-200 underline"
+              className="px-3 py-2 text-xs text-gray-500 hover:text-gray-900 underline"
             >
               {showSqlPreview ? 'Ukryj kod SQL' : 'Zobacz podgląd kodu SQL'}
             </button>
@@ -155,7 +153,7 @@ export const StarterHub: React.FC<StarterHubProps> = ({
 
           {/* Podgląd kodu SQL */}
           {showSqlPreview && (
-            <div className="mt-3 p-3 bg-black/60 rounded-xl border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto max-h-60 leading-relaxed">
+            <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-200 font-mono text-[11px] text-gray-800 overflow-x-auto max-h-60 leading-relaxed shadow-inner">
               <pre>{STARTER_SETUP_SQL}</pre>
             </div>
           )}
@@ -164,29 +162,29 @@ export const StarterHub: React.FC<StarterHubProps> = ({
         {/* Grid 2 kart dodatkowych */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Opcja B: Otwórz istniejącą tabelę po nazwie */}
-          <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div className="p-5 rounded-xl bg-white border border-gray-200 space-y-3 flex flex-col justify-between shadow-2xs">
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-slate-200 font-semibold text-xs">
-                <Database className="w-4 h-4 text-sky-400" />
+              <div className="flex items-center gap-2 text-[#161616] font-semibold text-xs">
+                <Database className="w-4 h-4 text-[#F36F21]" />
                 <span>Otwórz dowolną tabelę po nazwie</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                Jeśli masz już własną tabelę w Supabase (np. <code>users</code>, <code>zamowienia</code>, <code>klienci</code>), wpisz jej nazwę:
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                Jeśli masz już własną tabelę w Supabase (np. <code>wozki</code>, <code>czesci</code>, <code>klienci</code>), wpisz jej nazwę:
               </p>
             </div>
 
             <form onSubmit={handleOpenTable} className="flex items-center gap-2 pt-1">
               <input
                 type="text"
-                placeholder="np. produkty, users..."
+                placeholder="np. produkty, wozki..."
                 value={quickTableName}
                 onChange={e => setQuickTableName(e.target.value)}
-                className="flex-1 px-3 py-2 text-xs font-mono bg-slate-900 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+                className="flex-1 px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-200 rounded-lg text-[#161616] placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white transition-colors"
               />
               <button
                 type="submit"
                 disabled={opening || !quickTableName.trim()}
-                className="px-3 py-2 text-xs font-medium text-white bg-sky-600 hover:bg-sky-500 disabled:opacity-40 rounded-lg transition-colors shrink-0"
+                className="px-3 py-2 text-xs font-semibold text-white bg-[#161616] hover:bg-gray-800 disabled:opacity-40 rounded-lg transition-colors shrink-0 shadow-2xs"
               >
                 {opening ? 'Otwieranie...' : 'Otwórz'}
               </button>
@@ -194,13 +192,13 @@ export const StarterHub: React.FC<StarterHubProps> = ({
           </div>
 
           {/* Opcja C: Kreator nowej tabeli w aplikacji */}
-          <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div className="p-5 rounded-xl bg-white border border-gray-200 space-y-3 flex flex-col justify-between shadow-2xs">
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-slate-200 font-semibold text-xs">
-                <Layers className="w-4 h-4 text-violet-400" />
+              <div className="flex items-center gap-2 text-[#161616] font-semibold text-xs">
+                <Layers className="w-4 h-4 text-[#F36F21]" />
                 <span>Kreator nowej tabeli w aplikacji</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-gray-500 leading-relaxed">
                 Zaprojektuj nową tabelę z własnymi kolumnami (tekst, liczby, zdjęcia, daty) przez interfejs graficzny.
               </p>
             </div>
@@ -208,9 +206,9 @@ export const StarterHub: React.FC<StarterHubProps> = ({
             <div className="pt-1">
               <button
                 onClick={onOpenCreateTable}
-                className="w-full px-4 py-2 text-xs font-medium text-white bg-violet-600 hover:bg-violet-500 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"
+                className="w-full px-4 py-2 text-xs font-semibold text-gray-800 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-2xs"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 text-[#F36F21]" />
                 <span>Uruchom kreator tabeli</span>
               </button>
             </div>
@@ -218,25 +216,25 @@ export const StarterHub: React.FC<StarterHubProps> = ({
         </div>
 
         {/* Dolny pasek z funkcjami Storage i Demo */}
-        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+        <div className="p-4 rounded-xl bg-white border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 shadow-2xs">
           <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-emerald-400" />
+            <HardDrive className="w-4 h-4 text-[#F36F21]" />
             <span>Obsługa zdjęć i multimediów przez Supabase Storage</span>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={onOpenStorage}
-              className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+              className="text-[#F36F21] hover:text-[#df5d12] font-semibold transition-colors"
             >
               Otwórz Storage Explorer →
             </button>
-            <span>·</span>
+            <span className="text-gray-300">·</span>
             <button
               onClick={onSwitchToDemo}
-              className="text-amber-400 hover:text-amber-300 transition-colors"
+              className="text-gray-600 hover:text-[#161616] font-medium transition-colors"
             >
-              Włącz tryb Demo
+              Włącz tryb demonstracyjny (Saw-Trak)
             </button>
           </div>
         </div>

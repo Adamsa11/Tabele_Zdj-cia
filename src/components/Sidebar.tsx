@@ -42,17 +42,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="w-64 border-r border-slate-800 bg-slate-950 flex flex-col shrink-0 select-none">
+    <aside className="w-64 border-r border-gray-200 bg-white flex flex-col shrink-0 select-none">
       {/* Tables Explorer Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-          <Layers className="w-4 h-4 text-emerald-400" />
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-600">
+          <Layers className="w-4 h-4 text-[#F36F21]" />
           <span>Tabele bazy ({tables.length})</span>
         </div>
 
         <button
           onClick={onOpenCreateTable}
-          className="p-1 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
+          className="p-1 text-gray-400 hover:text-[#F36F21] hover:bg-orange-50 rounded-md transition-colors"
           title="Utwórz nową tabelę"
           aria-label="Utwórz nową tabelę"
         >
@@ -61,9 +61,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Search Input */}
-      <div className="p-3 border-b border-slate-800/80">
+      <div className="p-3 border-b border-gray-100">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Szukaj lub wpisz nazwę..."
@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 handleOpenByName(search);
               }
             }}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500 font-mono"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#F9F9F9] border border-gray-200 rounded-lg text-[#161616] placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white font-mono transition-colors"
           />
         </div>
       </div>
@@ -89,15 +89,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onSelectTable(t)}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left ${
                 isSelected
-                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                  : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                  ? 'bg-orange-50 text-[#F36F21] border border-orange-200/90 font-semibold shadow-xs'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-[#161616] border border-transparent'
               }`}
             >
               <div className="flex items-center gap-2 truncate">
-                <TableIcon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <TableIcon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#F36F21]' : 'text-gray-400'}`} />
                 <span className="truncate font-mono">{t.name}</span>
               </div>
-              <span className="text-[11px] text-slate-400 shrink-0 font-mono">
+              <span className={`text-[11px] shrink-0 font-mono ${isSelected ? 'text-orange-600' : 'text-gray-400'}`}>
                 {t.columns.length} kol.
               </span>
             </button>
@@ -105,14 +105,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
 
         {filteredTables.length === 0 && (
-          <div className="p-4 text-center text-xs text-slate-400 space-y-2">
+          <div className="p-4 text-center text-xs text-gray-500 space-y-2">
             <p>{search ? `Brak tabeli "${search}" na liście.` : 'Brak tabel w schemacie.'}</p>
             {search && onQuickOpenTable && (
               <button
                 type="button"
                 onClick={() => handleOpenByName(search)}
                 disabled={opening}
-                className="w-full px-2.5 py-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-sm"
+                className="w-full px-2.5 py-1.5 text-xs font-medium bg-[#F36F21] hover:bg-[#df5d12] text-white rounded-lg transition-colors shadow-xs"
               >
                 {opening ? 'Sprawdzanie...' : `Otwórz tabelę "${search}"`}
               </button>
@@ -122,27 +122,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Shortcuts */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/60 space-y-1">
+      <div className="p-3 border-t border-gray-200 bg-gray-50/60 space-y-1">
         <button
           onClick={onOpenStorage}
-          className="w-full flex items-center justify-between px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-900 rounded-lg transition-colors text-left"
+          className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-700 hover:text-[#161616] hover:bg-white rounded-lg transition-colors text-left border border-transparent hover:border-gray-200 shadow-xs"
         >
           <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-slate-400" />
-            <span>Supabase Storage</span>
+            <HardDrive className="w-4 h-4 text-gray-500" />
+            <span className="font-medium">Supabase Storage</span>
           </div>
-          <span className="text-[10px] text-emerald-400 font-mono">Media</span>
+          <span className="text-[10px] text-[#F36F21] font-mono font-semibold">Media</span>
         </button>
 
         <button
           onClick={onOpenSettings}
-          className="w-full flex items-center justify-between px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-900 rounded-lg transition-colors text-left"
+          className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-700 hover:text-[#161616] hover:bg-white rounded-lg transition-colors text-left border border-transparent hover:border-gray-200 shadow-xs"
         >
           <div className="flex items-center gap-2">
-            <Settings className="w-4 h-4 text-slate-400" />
-            <span>Konfiguracja bazy</span>
+            <Settings className="w-4 h-4 text-gray-500" />
+            <span className="font-medium">Konfiguracja bazy</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono">
+          <span className="text-[10px] text-gray-500 font-mono">
             {config.isDemo ? 'Demo' : 'Live'}
           </span>
         </button>
@@ -150,13 +150,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onOpenDiagnostics && (
           <button
             onClick={onOpenDiagnostics}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs text-amber-300 hover:text-amber-200 hover:bg-amber-950/40 rounded-lg transition-colors text-left border border-amber-500/20"
+            className="w-full flex items-center justify-between px-3 py-2 text-xs text-orange-700 hover:text-orange-800 bg-orange-50/70 hover:bg-orange-100 rounded-lg transition-colors text-left border border-orange-200 shadow-xs font-medium"
           >
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-amber-400" />
-              <span>Diagnostyka bazy & RLS</span>
+              <Activity className="w-4 h-4 text-[#F36F21]" />
+              <span>Diagnostyka & RLS</span>
             </div>
-            <span className="text-[10px] text-amber-400 font-mono">Pomoc</span>
+            <span className="text-[10px] text-[#F36F21] font-mono font-bold">Pomoc</span>
           </button>
         )}
       </div>

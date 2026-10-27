@@ -20,9 +20,7 @@ import {
   Copy,
   Check,
   ChevronDown,
-  ChevronUp,
-  FileCode2,
-  Info
+  ChevronUp
 } from 'lucide-react';
 
 interface ConnectionModalProps {
@@ -119,28 +117,28 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
       isConnected: false
     });
     onConfigUpdated(updated);
-    onToast('info', 'Tryb demonstracyjny', 'Aktywowano lokalną bazę demonstracyjną z gotowymi tabelami i mediami.');
+    onToast('info', 'Tryb demonstracyjny', 'Aktywowano lokalną bazę demonstracyjną Saw-Trak.');
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl text-[#161616]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/70">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/70">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2 rounded-lg bg-orange-50 text-[#F36F21] border border-orange-200">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-100">Ustawienia połączenia z Supabase</h3>
-              <p className="text-xs text-slate-400">Podłącz swój projekt lub korzystaj z bazy demonstracyjnej</p>
+              <h3 className="text-base font-bold text-[#161616] font-heading">Ustawienia połączenia z Supabase</h3>
+              <p className="text-xs text-gray-500">Podłącz swój projekt lub korzystaj z demonstracyjnej bazy Saw-Trak</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -149,23 +147,23 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
         {/* Content */}
         <div className="p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-130px)]">
           {/* Mode Switcher */}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 border border-gray-200">
             <div className="flex items-center gap-2.5">
-              <Zap className={`w-4 h-4 ${isDemo ? 'text-amber-400' : 'text-slate-400'}`} />
+              <Zap className={`w-4 h-4 ${isDemo ? 'text-[#F36F21]' : 'text-gray-400'}`} />
               <div>
-                <p className="text-xs font-semibold text-slate-200">Tryb pracy</p>
-                <p className="text-[11px] text-slate-400">
-                  {isDemo ? 'Tryb demonstracyjny (lokalne przykładowe tabele i zdjęcia)' : 'Połączony z Twoją chmurą Supabase'}
+                <p className="text-xs font-bold text-[#161616]">Tryb pracy</p>
+                <p className="text-[11px] text-gray-500">
+                  {isDemo ? 'Tryb demonstracyjny (wózki widłowe Saw-Trak, części, klienci)' : 'Połączony z Twoją chmurą Supabase'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-md border border-slate-800 text-xs">
+            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-gray-200 text-xs shadow-2xs">
               <button
                 type="button"
                 onClick={() => setIsDemo(false)}
-                className={`px-2.5 py-1 rounded transition-colors ${
-                  !isDemo ? 'bg-emerald-600 text-white font-medium' : 'text-slate-400 hover:text-slate-200'
+                className={`px-3 py-1 rounded-md transition-colors font-medium ${
+                  !isDemo ? 'bg-[#161616] text-white' : 'text-gray-600 hover:text-[#161616]'
                 }`}
               >
                 Chmura Supabase
@@ -173,8 +171,8 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsDemo(true)}
-                className={`px-2.5 py-1 rounded transition-colors ${
-                  isDemo ? 'bg-amber-600 text-white font-medium' : 'text-slate-400 hover:text-slate-200'
+                className={`px-3 py-1 rounded-md transition-colors font-medium ${
+                  isDemo ? 'bg-[#F36F21] text-white' : 'text-gray-600 hover:text-[#161616]'
                 }`}
               >
                 Tryb Demo
@@ -186,8 +184,8 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
             /* Live Supabase Inputs */
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
-                  <Globe className="w-3.5 h-3.5" />
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-600 flex items-center gap-1.5 mb-1.5">
+                  <Globe className="w-3.5 h-3.5 text-[#F36F21]" />
                   <span>Project URL</span>
                 </label>
                 <input
@@ -195,13 +193,13 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   placeholder="https://xyzcompany.supabase.co"
                   value={url}
                   onChange={e => setUrl(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono bg-slate-950 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white transition-colors"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
-                  <Key className="w-3.5 h-3.5" />
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-600 flex items-center gap-1.5 mb-1.5">
+                  <Key className="w-3.5 h-3.5 text-[#F36F21]" />
                   <span>API Key (anon / public lub service_role)</span>
                 </label>
                 <input
@@ -209,16 +207,16 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... lub sb_publishable_..."
                   value={key}
                   onChange={e => setKey(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono bg-slate-950 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white transition-colors"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-gray-500 mt-1">
                   Klucz anon/publishable umożliwia operacje zgodnie z politykami RLS. Klucz service_role omija RLS.
                 </p>
               </div>
 
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
-                  <Shield className="w-3.5 h-3.5" />
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-600 flex items-center gap-1.5 mb-1.5">
+                  <Shield className="w-3.5 h-3.5 text-[#F36F21]" />
                   <span>Domyślny Bucket Storage dla zdjęć</span>
                 </label>
                 <input
@@ -226,7 +224,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   placeholder="np. images, products, avatars"
                   value={defaultBucket}
                   onChange={e => setDefaultBucket(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono bg-slate-950 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white transition-colors"
                 />
               </div>
 
@@ -236,16 +234,16 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   type="button"
                   onClick={handleTest}
                   disabled={testing || !url.trim() || !key.trim()}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium text-slate-100 bg-emerald-700/80 hover:bg-emerald-600 disabled:opacity-50 border border-emerald-500/40 rounded-lg transition-colors shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-[#F36F21] bg-orange-50 hover:bg-orange-100 disabled:opacity-50 border border-orange-200 rounded-lg transition-colors shadow-2xs"
                 >
                   {testing ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F36F21]" />
                       <span>Testowanie uprawnień information_schema i połączenia...</span>
                     </>
                   ) : (
                     <>
-                      <Zap className="w-4 h-4 text-emerald-300" />
+                      <Zap className="w-4 h-4 text-[#F36F21]" />
                       <span>Przetestuj połączenie i metadane information_schema</span>
                     </>
                   )}
@@ -257,25 +255,25 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                 <div
                   className={`p-4 rounded-xl border text-xs space-y-3 transition-all ${
                     diagnostic.readable && diagnostic.tablesFound.length > 0
-                      ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
                       : diagnostic.ok
-                      ? 'bg-amber-950/30 border-amber-500/40 text-amber-200'
-                      : 'bg-rose-950/30 border-rose-500/40 text-rose-200'
+                      ? 'bg-amber-50 border-amber-200 text-amber-900'
+                      : 'bg-rose-50 border-rose-200 text-rose-900'
                   }`}
                 >
                   {/* Status Header */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-semibold text-sm">
+                    <div className="flex items-center gap-2 font-bold text-sm">
                       {diagnostic.readable && diagnostic.tablesFound.length > 0 ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                       ) : diagnostic.ok ? (
-                        <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+                        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
                       ) : (
-                        <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+                        <AlertTriangle className="w-5 h-5 text-[#CC0000] shrink-0" />
                       )}
                       <span>{diagnostic.statusTitle}</span>
                     </div>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-900/80 border border-slate-700/60 text-slate-300">
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white border border-gray-300 text-gray-700 shadow-2xs">
                       {diagnostic.latencyMs} ms
                     </span>
                   </div>
@@ -284,12 +282,10 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   <div className="flex flex-wrap items-center gap-2 pt-1">
                     {/* Information Schema Badge */}
                     <div
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium border ${
-                        diagnostic.directInformationSchemaAccess
-                          ? 'bg-emerald-900/40 border-emerald-500/50 text-emerald-300'
-                          : diagnostic.openApiSchemaAccess
-                          ? 'bg-emerald-900/40 border-emerald-500/50 text-emerald-300'
-                          : 'bg-rose-900/40 border-rose-500/50 text-rose-300'
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium border bg-white ${
+                        diagnostic.directInformationSchemaAccess || diagnostic.openApiSchemaAccess
+                          ? 'border-emerald-300 text-emerald-700'
+                          : 'border-rose-300 text-[#CC0000]'
                       }`}
                     >
                       <Database className="w-3.5 h-3.5" />
@@ -304,36 +300,36 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                     </div>
 
                     {/* Tables Count Badge */}
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-sky-950/50 border border-sky-500/40 text-sky-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-blue-200 text-blue-700">
                       <Table2 className="w-3.5 h-3.5" />
                       <span>Tabele w schemacie: {diagnostic.tablesFound.length}</span>
                     </div>
 
                     {/* Role Badge */}
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-purple-950/50 border border-purple-500/40 text-purple-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-purple-200 text-purple-700">
                       <Key className="w-3.5 h-3.5" />
                       <span>Rola: {diagnostic.role}</span>
                     </div>
                   </div>
 
                   {/* Main Message */}
-                  <p className="text-xs leading-relaxed text-slate-200">
+                  <p className="text-xs leading-relaxed text-gray-800">
                     {diagnostic.message}
                   </p>
 
                   {/* Discovered Tables List */}
                   {diagnostic.tablesFound.length > 0 && (
-                    <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800">
-                      <p className="text-[11px] text-slate-400 font-medium mb-1.5">
+                    <div className="p-2.5 rounded-lg bg-white border border-gray-200 shadow-2xs">
+                      <p className="text-[11px] text-gray-500 font-semibold mb-1.5">
                         Wykryte dostępne tabele:
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {diagnostic.tablesFound.map(tbl => (
                           <span
                             key={tbl}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 font-mono text-[11px] text-slate-200"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-50 border border-gray-200 font-mono text-[11px] text-gray-800"
                           >
-                            <Table2 className="w-3 h-3 text-emerald-400" />
+                            <Table2 className="w-3 h-3 text-[#F36F21]" />
                             {tbl}
                           </span>
                         ))}
@@ -343,14 +339,14 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
 
                   {/* Empty Database Guidance + Quick Copy SQL */}
                   {diagnostic.ok && diagnostic.tablesFound.length === 0 && (
-                    <div className="p-3 rounded-lg bg-amber-950/40 border border-amber-500/30 space-y-2">
-                      <p className="text-[11px] text-amber-200 leading-relaxed">
+                    <div className="p-3 rounded-lg bg-orange-100/70 border border-orange-200 space-y-2">
+                      <p className="text-[11px] text-orange-950 leading-relaxed">
                         Połączenie jest poprawne, ale w schemacie bazy nie ma jeszcze tabel. Możesz jednym kliknięciem skopiować gotowy skrypt SQL, który utworzy tabelę <code>produkty</code>, doda uprawnienia RLS oraz bucket na zdjęcia.
                       </p>
                       <button
                         type="button"
                         onClick={handleCopySql}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold text-xs transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#F36F21] hover:bg-[#df5d12] text-white font-semibold text-xs transition-colors shadow-2xs"
                       >
                         {copiedSql ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copiedSql ? 'Skopiowano do schowka!' : 'Kopiuj gotowy SQL startowy (produkty + RLS + storage)'}</span>
@@ -362,8 +358,8 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                   {diagnostic.recommendations.length > 0 && (
                     <div className="space-y-1 pt-1">
                       {diagnostic.recommendations.map((rec, i) => (
-                        <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-300">
-                          <span className="text-emerald-400 shrink-0 font-bold">•</span>
+                        <div key={i} className="flex items-start gap-1.5 text-[11px] text-gray-700">
+                          <span className="text-[#F36F21] shrink-0 font-bold">•</span>
                           <span>{rec}</span>
                         </div>
                       ))}
@@ -372,17 +368,17 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
 
                   {/* Collapsible Technical Details */}
                   {diagnostic.details && (
-                    <div className="pt-1 border-t border-slate-800/60">
+                    <div className="pt-1 border-t border-gray-200">
                       <button
                         type="button"
                         onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
-                        className="flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors"
+                        className="flex items-center gap-1.5 text-[11px] text-gray-500 hover:text-gray-900 transition-colors"
                       >
                         {showTechnicalDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                         <span>Szczegóły techniczne diagnostyki</span>
                       </button>
                       {showTechnicalDetails && (
-                        <div className="mt-1.5 p-2 rounded bg-slate-950/80 border border-slate-800 text-[10px] font-mono text-slate-300 whitespace-pre-wrap break-all">
+                        <div className="mt-1.5 p-2 rounded bg-white border border-gray-200 text-[10px] font-mono text-gray-800 whitespace-pre-wrap break-all shadow-inner">
                           {diagnostic.details}
                         </div>
                       )}
@@ -393,26 +389,29 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
             </div>
           ) : (
             /* Demo Mode explanation */
-            <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2 leading-relaxed">
-              <p>
-                <strong>Tryb demonstracyjny</strong> pozwala na pełne przetestowanie wszystkich funkcji aplikacji bez konieczności podawania własnych danych uwierzytelniających Supabase:
+            <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-700 space-y-2 leading-relaxed">
+              <p className="font-semibold text-[#161616]">
+                Tryb demonstracyjny Saw-Trak:
               </p>
-              <ul className="list-disc list-inside space-y-1 text-slate-400">
-                <li>Dynamiczne tabele: <code>products</code>, <code>customers</code>, <code>orders</code>, <code>media_assets</code></li>
-                <li>Pełny CRUD: dodawanie, usuwanie pojedyncze oraz masowe, edycja</li>
-                <li>Import masowy z plików CSV, Excel (.xlsx) oraz JSON z mapowaniem kolumn</li>
-                <li>Upload zdjęć i podgląd miniaturek oraz lightbox</li>
+              <p className="text-gray-600">
+                Pozwala na natychmiastowe przetestowanie wszystkich funkcji menedżera danych w branży wózków widłowych i logistyki magazynowej:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-gray-600">
+                <li>Gotowe tabele flotowe: <code>products</code>, <code>customers</code>, <code>orders</code>, <code>media_assets</code></li>
+                <li>Pełny CRUD: dodawanie, usuwanie wierszy oraz masowe usuwanie, edycja</li>
+                <li>Import z plików CSV, Excel (.xlsx) oraz JSON z mapowaniem kolumn</li>
+                <li>Magazyn multimediów ze zdjęciami sprzętu oraz podgląd lightbox</li>
               </ul>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-950/70">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/70">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-100 rounded-lg transition-colors border border-gray-300 shadow-2xs"
           >
             Anuluj
           </button>
@@ -421,7 +420,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
               <button
                 type="button"
                 onClick={switchToDemo}
-                className="px-3 py-2 text-xs font-medium text-amber-300 hover:text-amber-200 bg-amber-950/40 hover:bg-amber-950/70 border border-amber-500/30 rounded-lg transition-colors"
+                className="px-3.5 py-2 text-xs font-semibold text-[#F36F21] hover:text-[#df5d12] bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-colors"
               >
                 Uruchom Demo
               </button>
@@ -429,7 +428,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
             <button
               type="button"
               onClick={handleSave}
-              className="px-5 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors shadow-sm"
+              className="px-5 py-2 text-xs font-semibold text-white bg-[#F36F21] hover:bg-[#df5d12] rounded-lg transition-colors shadow-sm"
             >
               Zapisz i zastosuj
             </button>

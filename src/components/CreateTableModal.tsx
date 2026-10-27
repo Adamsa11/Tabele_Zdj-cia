@@ -19,8 +19,8 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
   const [tableName, setTableName] = useState('');
   const [columns, setColumns] = useState<ColumnMeta[]>([
     { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
-    { name: 'title', dataType: 'text', isPrimary: false, isNullable: false },
-    { name: 'image_url', dataType: 'image', isPrimary: false, isNullable: true },
+    { name: 'nazwa_modelu', dataType: 'text', isPrimary: false, isNullable: false },
+    { name: 'zdjecie_url', dataType: 'image', isPrimary: false, isNullable: true },
     { name: 'created_at', dataType: 'datetime', isPrimary: false, isNullable: false }
   ]);
   const [showSql, setShowSql] = useState(false);
@@ -32,7 +32,7 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
     setColumns(prev => [
       ...prev,
       {
-        name: `column_${prev.length + 1}`,
+        name: `kolumna_${prev.length + 1}`,
         dataType: 'text',
         isPrimary: false,
         isNullable: true
@@ -101,23 +101,23 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl text-[#161616]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/70">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/70">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2 rounded-lg bg-orange-50 text-[#F36F21] border border-orange-200">
               <Table className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-100">Utwórz nową tabelę / schemat</h3>
-              <p className="text-xs text-slate-400">Zdefiniuj strukturę kolumn i typów dla Supabase</p>
+              <h3 className="text-base font-bold text-[#161616] font-heading">Utwórz nową tabelę / schemat</h3>
+              <p className="text-xs text-gray-500">Zdefiniuj strukturę kolumn i typów dla Supabase</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -127,28 +127,28 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
         <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Table Name */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-gray-600 block mb-1.5">
               Nazwa tabeli (PostgreSQL)
             </label>
             <input
               type="text"
-              placeholder="np. products, invoices, articles"
+              placeholder="np. wozki_widlowe, czesci, zlecenia"
               value={tableName}
               onChange={e => setTableName(e.target.value)}
-              className="w-full px-3 py-2 text-xs font-mono bg-slate-950 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+              className="w-full px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white"
             />
           </div>
 
           {/* Columns Designer */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
                 Kolumny tabeli ({columns.length})
               </label>
               <button
                 type="button"
                 onClick={handleAddColumn}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/70 border border-emerald-500/30 rounded-lg transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1 text-xs text-[#F36F21] hover:text-[#df5d12] bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-colors font-medium"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Dodaj kolumnę</span>
@@ -159,7 +159,7 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
               {columns.map((col, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-2 p-2 bg-slate-950/60 border border-slate-800 rounded-lg"
+                  className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-xl"
                 >
                   {/* Name */}
                   <input
@@ -167,14 +167,14 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
                     value={col.name}
                     onChange={e => handleColumnChange(index, 'name', e.target.value)}
                     placeholder="nazwa_kolumny"
-                    className="flex-1 px-2.5 py-1.5 text-xs font-mono bg-slate-900 border border-slate-800 rounded text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="flex-1 px-2.5 py-1.5 text-xs font-mono bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-[#F36F21]"
                   />
 
                   {/* Data Type */}
                   <select
                     value={col.dataType}
                     onChange={e => handleColumnChange(index, 'dataType', e.target.value as ColumnDataType)}
-                    className="px-2 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="px-2 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-[#F36F21]"
                   >
                     <option value="text">text (tekst)</option>
                     <option value="number">number (liczba)</option>
@@ -186,23 +186,23 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
                   </select>
 
                   {/* Primary Key Check */}
-                  <label className="flex items-center gap-1 text-[11px] text-slate-400 cursor-pointer px-1">
+                  <label className="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer px-1">
                     <input
                       type="checkbox"
                       checked={!!col.isPrimary}
                       onChange={e => handleColumnChange(index, 'isPrimary', e.target.checked)}
-                      className="rounded border-slate-800 text-emerald-500 focus:ring-0"
+                      className="rounded border-gray-300 text-[#F36F21] focus:ring-0"
                     />
                     <span>PK</span>
                   </label>
 
                   {/* Nullable Check */}
-                  <label className="flex items-center gap-1 text-[11px] text-slate-400 cursor-pointer px-1">
+                  <label className="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer px-1">
                     <input
                       type="checkbox"
                       checked={!!col.isNullable}
                       onChange={e => handleColumnChange(index, 'isNullable', e.target.checked)}
-                      className="rounded border-slate-800 text-emerald-500 focus:ring-0"
+                      className="rounded border-gray-300 text-[#F36F21] focus:ring-0"
                     />
                     <span>Null</span>
                   </label>
@@ -212,7 +212,7 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
                     type="button"
                     onClick={() => handleRemoveColumn(index)}
                     disabled={columns.length <= 1}
-                    className="p-1.5 text-slate-400 hover:text-rose-400 disabled:opacity-30 rounded transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-[#CC0000] disabled:opacity-30 rounded transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -226,23 +226,23 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
             <button
               type="button"
               onClick={() => setShowSql(!showSql)}
-              className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5"
+              className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 font-medium"
             >
-              <Code className="w-3.5 h-3.5 text-emerald-400" />
+              <Code className="w-3.5 h-3.5 text-[#F36F21]" />
               <span>{showSql ? 'Ukryj kod PostgreSQL DDL' : 'Pokaż kod PostgreSQL DDL dla Supabase SQL Editor'}</span>
             </button>
 
             {showSql && (
               <div className="mt-2 relative">
-                <pre className="p-3 bg-slate-950 border border-slate-800 rounded-lg text-[11px] font-mono text-emerald-400 overflow-x-auto">
+                <pre className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-mono text-gray-800 overflow-x-auto shadow-inner">
                   {generateSql()}
                 </pre>
                 <button
                   type="button"
                   onClick={handleCopySql}
-                  className="absolute top-2 right-2 px-2 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center gap-1 border border-slate-700"
+                  className="absolute top-2 right-2 px-2 py-1 text-[11px] bg-white hover:bg-gray-100 text-gray-700 rounded-md flex items-center gap-1 border border-gray-300 shadow-2xs font-medium"
                 >
-                  {copiedSql ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedSql ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3 text-gray-500" />}
                   <span>{copiedSql ? 'Skopiowano' : 'Kopiuj'}</span>
                 </button>
               </div>
@@ -251,18 +251,18 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-950/70">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/70">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg transition-colors shadow-2xs"
           >
             Anuluj
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors shadow-sm"
+            className="px-5 py-2 text-xs font-semibold text-white bg-[#F36F21] hover:bg-[#df5d12] rounded-lg transition-colors shadow-sm"
           >
             Utwórz tabelę w aplikacji
           </button>

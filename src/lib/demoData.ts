@@ -2,324 +2,347 @@ import { TableMeta, StorageBucketItem, StorageFileItem } from '../types';
 
 export const DEMO_TABLES: TableMeta[] = [
   {
-    name: 'products',
+    name: 'wozki_widlowe',
     schema: 'public',
     rowCount: 6,
     columns: [
       { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
-      { name: 'title', dataType: 'text', isNullable: false },
-      { name: 'category', dataType: 'text', isNullable: false },
-      { name: 'price', dataType: 'number', isNullable: false },
-      { name: 'stock', dataType: 'number', isNullable: false },
-      { name: 'image_url', dataType: 'image', isNullable: true },
-      { name: 'is_active', dataType: 'boolean', isNullable: false, defaultValue: 'true' },
-      { name: 'created_at', dataType: 'datetime', isNullable: false }
+      { name: 'model', dataType: 'text', isNullable: false },
+      { name: 'typ_napedu', dataType: 'text', isNullable: false },
+      { name: 'udzwig_kg', dataType: 'number', isNullable: false },
+      { name: 'wysokosc_podnoszenia_mm', dataType: 'number', isNullable: false },
+      { name: 'cena_pln', dataType: 'number', isNullable: false },
+      { name: 'zdjecie_url', dataType: 'image', isNullable: true },
+      { name: 'dostepny_od_reki', dataType: 'boolean', isNullable: false, defaultValue: 'true' },
+      { name: 'rok_produkcji', dataType: 'number', isNullable: false },
+      { name: 'stan_techniczny', dataType: 'text', isNullable: false }
     ]
   },
   {
-    name: 'customers',
+    name: 'czesci_zamienne',
     schema: 'public',
     rowCount: 5,
     columns: [
       { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
-      { name: 'full_name', dataType: 'text', isNullable: false },
-      { name: 'email', dataType: 'text', isNullable: false },
-      { name: 'avatar_url', dataType: 'image', isNullable: true },
-      { name: 'phone', dataType: 'text', isNullable: true },
-      { name: 'status', dataType: 'text', isNullable: false, defaultValue: 'active' },
-      { name: 'total_orders', dataType: 'number', isNullable: false, defaultValue: '0' },
-      { name: 'created_at', dataType: 'datetime', isNullable: false }
+      { name: 'kod_katalogowy', dataType: 'text', isNullable: false },
+      { name: 'nazwa_czesci', dataType: 'text', isNullable: false },
+      { name: 'kategoria', dataType: 'text', isNullable: false },
+      { name: 'stan_magazynowy', dataType: 'number', isNullable: false },
+      { name: 'cena_netto_pln', dataType: 'number', isNullable: false },
+      { name: 'zdjecie_czesci', dataType: 'image', isNullable: true }
     ]
   },
   {
-    name: 'orders',
+    name: 'klienci_flotowi',
     schema: 'public',
     rowCount: 5,
     columns: [
       { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
-      { name: 'customer_name', dataType: 'text', isNullable: false },
-      { name: 'total_amount', dataType: 'number', isNullable: false },
+      { name: 'nazwa_firmy', dataType: 'text', isNullable: false },
+      { name: 'nip', dataType: 'text', isNullable: false },
+      { name: 'miasto', dataType: 'text', isNullable: false },
+      { name: 'liczba_wozkow_wynajem', dataType: 'number', isNullable: false, defaultValue: '0' },
+      { name: 'opiekun_klienta', dataType: 'text', isNullable: false },
+      { name: 'status_umowy', dataType: 'text', isNullable: false }
+    ]
+  },
+  {
+    name: 'zlecenia_serwisowe',
+    schema: 'public',
+    rowCount: 5,
+    columns: [
+      { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
+      { name: 'nr_zlecenia', dataType: 'text', isNullable: false },
+      { name: 'klient', dataType: 'text', isNullable: false },
+      { name: 'wozek_model', dataType: 'text', isNullable: false },
+      { name: 'rodzaj_uslugi', dataType: 'text', isNullable: false },
+      { name: 'protokol_zdjecie', dataType: 'image', isNullable: true },
       { name: 'status', dataType: 'text', isNullable: false },
-      { name: 'receipt_image', dataType: 'image', isNullable: true },
-      { name: 'delivery_city', dataType: 'text', isNullable: false },
-      { name: 'created_at', dataType: 'datetime', isNullable: false }
-    ]
-  },
-  {
-    name: 'media_assets',
-    schema: 'public',
-    rowCount: 4,
-    columns: [
-      { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
-      { name: 'title', dataType: 'text', isNullable: false },
-      { name: 'file_name', dataType: 'text', isNullable: false },
-      { name: 'file_url', dataType: 'image', isNullable: false },
-      { name: 'file_size_kb', dataType: 'number', isNullable: false },
-      { name: 'category', dataType: 'text', isNullable: false },
-      { name: 'uploaded_at', dataType: 'datetime', isNullable: false }
+      { name: 'data_wykonania', dataType: 'datetime', isNullable: false }
     ]
   }
 ];
 
 export const DEMO_DATA: Record<string, Record<string, any>[]> = {
-  products: [
-    {
-      id: 101,
-      title: 'Studio Monitor Audio Pro X',
-      category: 'Audio',
-      price: 1299.00,
-      stock: 24,
-      image_url: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80',
-      is_active: true,
-      created_at: '2026-02-14T10:20:00Z'
-    },
-    {
-      id: 102,
-      title: 'Mechaniczna Klawiatura RGB Silent',
-      category: 'Akcesoria',
-      price: 450.50,
-      stock: 85,
-      image_url: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80',
-      is_active: true,
-      created_at: '2026-03-01T14:10:00Z'
-    },
-    {
-      id: 103,
-      title: 'Słuchawki Bezprzewodowe ANC',
-      category: 'Audio',
-      price: 899.99,
-      stock: 42,
-      image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
-      is_active: true,
-      created_at: '2026-03-12T09:45:00Z'
-    },
-    {
-      id: 104,
-      title: 'Kamera Internetowa 4K Ultra HD',
-      category: 'Video',
-      price: 620.00,
-      stock: 15,
-      image_url: 'https://images.unsplash.com/photo-1588796289154-1596e1082a93?auto=format&fit=crop&w=600&q=80',
-      is_active: true,
-      created_at: '2026-03-18T16:30:00Z'
-    },
-    {
-      id: 105,
-      title: 'Podkładka Biurkowa z Naturalnej Skóry',
-      category: 'Biuro',
-      price: 180.00,
-      stock: 120,
-      image_url: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=600&q=80',
-      is_active: true,
-      created_at: '2026-04-02T11:00:00Z'
-    },
-    {
-      id: 106,
-      title: 'Ergonomiczny Fotel Biurowy Mesh',
-      category: 'Meble',
-      price: 2150.00,
-      stock: 8,
-      image_url: 'https://images.unsplash.com/photo-1580481077111-9a74fc958862?auto=format&fit=crop&w=600&q=80',
-      is_active: false,
-      created_at: '2026-04-10T15:20:00Z'
-    }
-  ],
-  customers: [
+  wozki_widlowe: [
     {
       id: 1,
-      full_name: 'Jan Kowalski',
-      email: 'jan.kowalski@example.com',
-      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-      phone: '+48 501 234 567',
-      status: 'active',
-      total_orders: 8,
-      created_at: '2026-01-15T08:00:00Z'
+      model: 'Saw-Trak Heli CPD25-GB2LI (Litowo-jonowy)',
+      typ_napedu: 'Elektryczny Li-Ion',
+      udzwig_kg: 2500,
+      wysokosc_podnoszenia_mm: 4800,
+      cena_pln: 89500.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: true,
+      rok_produkcji: 2025,
+      stan_techniczny: 'Fabrycznie nowy'
     },
     {
       id: 2,
-      full_name: 'Anna Nowak',
-      email: 'anna.nowak@example.com',
-      avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=250&q=80',
-      phone: '+48 602 345 678',
-      status: 'active',
-      total_orders: 14,
-      created_at: '2026-01-20T12:30:00Z'
+      model: 'Saw-Trak Heli CPCD30 Diesel Triplex',
+      typ_napedu: 'Diesel Kubota',
+      udzwig_kg: 3000,
+      wysokosc_podnoszenia_mm: 4500,
+      cena_pln: 104000.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: true,
+      rok_produkcji: 2024,
+      stan_techniczny: 'Nowy'
     },
     {
       id: 3,
-      full_name: 'Piotr Wiśniewski',
-      email: 'p.wisniewski@company.pl',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80',
-      phone: '+48 703 456 789',
-      status: 'vip',
-      total_orders: 29,
-      created_at: '2026-02-05T14:15:00Z'
+      model: 'Saw-Trak Reach Truck CQD16-D2',
+      typ_napedu: 'Elektryczny AC',
+      udzwig_kg: 1600,
+      wysokosc_podnoszenia_mm: 7500,
+      cena_pln: 118000.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: true,
+      rok_produkcji: 2025,
+      stan_techniczny: 'Fabrycznie nowy'
     },
     {
       id: 4,
-      full_name: 'Magdalena Zielińska',
-      email: 'magda.zielinska@domain.com',
-      avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=250&q=80',
-      phone: '+48 512 889 123',
-      status: 'inactive',
-      total_orders: 1,
-      created_at: '2026-02-28T09:10:00Z'
+      model: 'Elektryczny Wózek Paletowy CBD15J-Li',
+      typ_napedu: 'Elektryczny Li-Ion 24V',
+      udzwig_kg: 1500,
+      wysokosc_podnoszenia_mm: 200,
+      cena_pln: 6490.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: true,
+      rok_produkcji: 2025,
+      stan_techniczny: 'Nowy'
     },
     {
       id: 5,
-      full_name: 'Tomasz Lewandowski',
-      email: 'tomasz.l@techlab.io',
-      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=250&q=80',
-      phone: '+48 691 223 344',
-      status: 'active',
-      total_orders: 5,
-      created_at: '2026-03-15T18:00:00Z'
+      model: 'Saw-Trak Heli CPCD50 Heavy Duty',
+      typ_napedu: 'Diesel Mitsubishi',
+      udzwig_kg: 5000,
+      wysokosc_podnoszenia_mm: 4000,
+      cena_pln: 168000.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: false,
+      rok_produkcji: 2023,
+      stan_techniczny: 'Używany - Certyfikowany po przeglądzie'
+    },
+    {
+      id: 6,
+      model: 'Czołowy Gazowy LPG CPQ18-M1',
+      typ_napedu: 'LPG / Benzyna',
+      udzwig_kg: 1800,
+      wysokosc_podnoszenia_mm: 3300,
+      cena_pln: 52000.00,
+      zdjecie_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+      dostepny_od_reki: true,
+      rok_produkcji: 2021,
+      stan_techniczny: 'Używany - Stan bardzo dobry'
     }
   ],
-  orders: [
+  czesci_zamienne: [
     {
-      id: 5001,
-      customer_name: 'Jan Kowalski',
-      total_amount: 1749.50,
-      status: 'delivered',
-      receipt_image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
-      delivery_city: 'Warszawa',
-      created_at: '2026-03-01T11:22:00Z'
+      id: 101,
+      kod_katalogowy: 'ST-BAT-48V-600AH',
+      nazwa_czesci: 'Bateria trakcyjna 48V 600Ah z systemem BFS',
+      kategoria: 'Zasilanie i Akumulatory',
+      stan_magazynowy: 14,
+      cena_netto_pln: 18900.00,
+      zdjecie_czesci: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
     },
     {
-      id: 5002,
-      customer_name: 'Anna Nowak',
-      total_amount: 899.99,
-      status: 'shipped',
-      receipt_image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=600&q=80',
-      delivery_city: 'Kraków',
-      created_at: '2026-03-14T15:40:00Z'
+      id: 102,
+      kod_katalogowy: 'ST-WID-FEM2A-1200',
+      nazwa_czesci: 'Widły kute 1200mm klasa karetki 2A (para)',
+      kategoria: 'Osprzęt i Widły',
+      stan_magazynowy: 48,
+      cena_netto_pln: 1150.00,
+      zdjecie_czesci: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?auto=format&fit=crop&w=600&q=80'
     },
     {
-      id: 5003,
-      customer_name: 'Piotr Wiśniewski',
-      total_amount: 3449.00,
-      status: 'processing',
-      receipt_image: null,
-      delivery_city: 'Gdańsk',
-      created_at: '2026-03-25T09:15:00Z'
+      id: 103,
+      kod_katalogowy: 'ST-OP-SE-18X7-8',
+      nazwa_czesci: 'Opona superelastyczna 18x7-8 Black Quick',
+      kategoria: 'Koła i Ogumienie',
+      stan_magazynowy: 32,
+      cena_netto_pln: 540.00,
+      zdjecie_czesci: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=600&q=80'
     },
     {
-      id: 5004,
-      customer_name: 'Tomasz Lewandowski',
-      total_amount: 450.50,
-      status: 'delivered',
-      receipt_image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
-      delivery_city: 'Wrocław',
-      created_at: '2026-04-03T16:05:00Z'
+      id: 104,
+      kod_katalogowy: 'ST-FIL-SET-KUBOTA',
+      nazwa_czesci: 'Zestaw filtrów przeglądowych 500mth Kubota V2403',
+      kategoria: 'Filtry i Oleje',
+      stan_magazynowy: 95,
+      cena_netto_pln: 380.00,
+      zdjecie_czesci: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80'
     },
     {
-      id: 5005,
-      customer_name: 'Magdalena Zielińska',
-      total_amount: 180.00,
-      status: 'cancelled',
-      receipt_image: null,
-      delivery_city: 'Poznań',
-      created_at: '2026-04-08T13:50:00Z'
+      id: 105,
+      kod_katalogowy: 'ST-PRZ-KAUP-2T',
+      nazwa_czesci: 'Przesuw boczny zintegrowany KAUP 2.5T',
+      kategoria: 'Hydraulika siłowa',
+      stan_magazynowy: 6,
+      cena_netto_pln: 3900.00,
+      zdjecie_czesci: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80'
     }
   ],
-  media_assets: [
+  klienci_flotowi: [
     {
       id: 1,
-      title: 'Broszura Produktowa 2026',
-      file_name: 'brochure_spring_2026.jpg',
-      file_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-      file_size_kb: 480,
-      category: 'marketing',
-      uploaded_at: '2026-02-10T14:00:00Z'
+      nazwa_firmy: 'Logistyka Polska Sp. z o.o.',
+      nip: '5252849102',
+      miasto: 'Warszawa',
+      liczba_wozkow_wynajem: 18,
+      opiekun_klienta: 'Marek Pawlak',
+      status_umowy: 'Aktywna (Wynajem długoterminowy)'
     },
     {
       id: 2,
-      title: 'Zdjęcie Stanowiska Testowego',
-      file_name: 'hardware_lab_bench.jpg',
-      file_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
-      file_size_kb: 1240,
-      category: 'technical',
-      uploaded_at: '2026-02-22T09:30:00Z'
+      nazwa_firmy: 'Centrum Dystrybucji Wielkopolska S.A.',
+      nip: '7781492019',
+      miasto: 'Poznań',
+      liczba_wozkow_wynajem: 32,
+      opiekun_klienta: 'Ewa Dąbrowska',
+      status_umowy: 'Aktywna (Full Serwis)'
     },
     {
       id: 3,
-      title: 'Nowe Opakowanie Ekologiczne',
-      file_name: 'eco_packaging_box.jpg',
-      file_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80',
-      file_size_kb: 890,
-      category: 'products',
-      uploaded_at: '2026-03-05T16:15:00Z'
+      nazwa_firmy: 'Hurtownia Budowlana Stal-Tech',
+      nip: '8971829103',
+      miasto: 'Wrocław',
+      liczba_wozkow_wynajem: 6,
+      opiekun_klienta: 'Tomasz Czarnecki',
+      status_umowy: 'Aktywna (Umowa serwisowa)'
     },
     {
       id: 4,
-      title: 'Plakat Konferencji Q2',
-      file_name: 'q2_summit_keynote.jpg',
-      file_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80',
-      file_size_kb: 670,
-      category: 'events',
-      uploaded_at: '2026-04-01T10:00:00Z'
+      nazwa_firmy: 'Śląskie Zakłady Przetwórstwa Mięsnego',
+      nip: '6342819022',
+      miasto: 'Katowice',
+      liczba_wozkow_wynajem: 12,
+      opiekun_klienta: 'Marek Pawlak',
+      status_umowy: 'W trakcie przedłużenia'
+    },
+    {
+      id: 5,
+      nazwa_firmy: 'Baltic Logistics Terminal',
+      nip: '5832910291',
+      miasto: 'Gdańsk',
+      liczba_wozkow_wynajem: 24,
+      opiekun_klienta: 'Ewa Dąbrowska',
+      status_umowy: 'Aktywna (Wynajem floty)'
+    }
+  ],
+  zlecenia_serwisowe: [
+    {
+      id: 7001,
+      nr_zlecenia: 'SRV/2026/04/012',
+      klient: 'Logistyka Polska Sp. z o.o.',
+      wozek_model: 'Heli CPD25-GB2LI',
+      rodzaj_uslugi: 'Okresowy przegląd UDT (500 mth)',
+      protokol_zdjecie: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
+      status: 'Zakończone / Podpisane',
+      data_wykonania: '2026-04-10T14:30:00Z'
+    },
+    {
+      id: 7002,
+      nr_zlecenia: 'SRV/2026/04/015',
+      klient: 'Centrum Dystrybucji Wielkopolska',
+      wozek_model: 'Reach Truck CQD16-D2',
+      rodzaj_uslugi: 'Wymiana rolek masztu i kalibracja sensora wysokości',
+      protokol_zdjecie: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=600&q=80',
+      status: 'W realizacji przez serwisanta',
+      data_wykonania: '2026-04-12T09:15:00Z'
+    },
+    {
+      id: 7003,
+      nr_zlecenia: 'SRV/2026/04/018',
+      klient: 'Hurtownia Budowlana Stal-Tech',
+      wozek_model: 'Heli CPCD30 Diesel',
+      rodzaj_uslugi: 'Przegląd układu hydrauliki i wymiana uszczelnień',
+      protokol_zdjecie: null,
+      status: 'Oczekuje na części',
+      data_wykonania: '2026-04-14T11:00:00Z'
+    },
+    {
+      id: 7004,
+      nr_zlecenia: 'SRV/2026/04/021',
+      klient: 'Śląskie Zakłady Przetwórstwa',
+      wozek_model: 'Elektryczny Wózek Paletowy CBD15J',
+      rodzaj_uslugi: 'Wymiana baterii Li-Ion oraz koła napędowego Vulkollan',
+      protokol_zdjecie: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
+      status: 'Zakończone',
+      data_wykonania: '2026-04-15T16:00:00Z'
+    },
+    {
+      id: 7005,
+      nr_zlecenia: 'SRV/2026/04/025',
+      klient: 'Baltic Logistics Terminal',
+      wozek_model: 'Heli CPCD50 Heavy Duty',
+      rodzaj_uslugi: 'Rewizja roczna masztu i badanie UDT',
+      protokol_zdjecie: null,
+      status: 'Zaplanowane na kolejny tydzień',
+      data_wykonania: '2026-04-22T08:00:00Z'
     }
   ]
 };
 
 export const DEMO_STORAGE_BUCKETS: StorageBucketItem[] = [
-  { id: 'products-images', name: 'products-images', isPublic: true, createdAt: '2026-01-01T00:00:00Z' },
-  { id: 'user-avatars', name: 'user-avatars', isPublic: true, createdAt: '2026-01-01T00:00:00Z' },
-  { id: 'documents-receipts', name: 'documents-receipts', isPublic: true, createdAt: '2026-01-01T00:00:00Z' }
+  { id: 'wozki-multimedia', name: 'wozki-multimedia', isPublic: true, createdAt: '2026-01-01T00:00:00Z' },
+  { id: 'czesci-zamienne', name: 'czesci-zamienne', isPublic: true, createdAt: '2026-01-01T00:00:00Z' },
+  { id: 'protokoly-udt', name: 'protokoly-udt', isPublic: true, createdAt: '2026-01-01T00:00:00Z' }
 ];
 
 export const DEMO_STORAGE_FILES: Record<string, StorageFileItem[]> = {
-  'products-images': [
+  'wozki-multimedia': [
     {
-      name: 'monitor-pro.jpg',
+      name: 'heli-cpd25-li-ion.jpg',
       id: 'f-1',
-      size: 452000,
+      size: 512000,
       createdAt: '2026-02-14T10:20:00Z',
-      publicUrl: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=800&q=80',
+      publicUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     },
     {
-      name: 'keyboard-mech.jpg',
+      name: 'reach-truck-cqd16.jpg',
       id: 'f-2',
-      size: 312000,
+      size: 640000,
       createdAt: '2026-03-01T14:10:00Z',
-      publicUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80',
+      publicUrl: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     },
     {
-      name: 'headphones-anc.jpg',
+      name: 'paleciak-cbd15j.jpg',
       id: 'f-3',
-      size: 580000,
+      size: 420000,
       createdAt: '2026-03-12T09:45:00Z',
-      publicUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+      publicUrl: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     }
   ],
-  'user-avatars': [
+  'czesci-zamienne': [
     {
-      name: 'avatar-jan.jpg',
+      name: 'bateria-trakcyjna-48v.jpg',
       id: 'f-4',
-      size: 140000,
+      size: 380000,
       createdAt: '2026-01-15T08:00:00Z',
-      publicUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      publicUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     },
     {
-      name: 'avatar-anna.jpg',
+      name: 'widly-kute-1200mm.jpg',
       id: 'f-5',
-      size: 180000,
+      size: 290000,
       createdAt: '2026-01-20T12:30:00Z',
-      publicUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+      publicUrl: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     }
   ],
-  'documents-receipts': [
+  'protokoly-udt': [
     {
-      name: 'receipt-5001.jpg',
+      name: 'protokol-udt-srv-7001.jpg',
       id: 'f-6',
-      size: 290000,
-      createdAt: '2026-03-01T11:22:00Z',
+      size: 310000,
+      createdAt: '2026-04-10T14:30:00Z',
       publicUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
       mimeType: 'image/jpeg'
     }

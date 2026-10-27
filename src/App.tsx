@@ -280,7 +280,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 antialiased font-sans">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#F9F9F9] text-[#161616] antialiased font-sans">
       {/* Pasek górny (TopBar) */}
       <TopBar
         config={config}
