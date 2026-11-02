@@ -46,6 +46,7 @@ interface DataGridProps {
   onShowLightbox: (url: string, title?: string) => void;
   onRefresh: () => void;
   onOpenSettings?: () => void;
+  onOpenTriggers?: () => void;
 }
 
 export const DataGrid: React.FC<DataGridProps> = ({
@@ -72,7 +73,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
   onOpenImport,
   onShowLightbox,
   onRefresh,
-  onOpenSettings
+  onOpenSettings,
+  onOpenTriggers
 }) => {
   const [selectedIds, setSelectedIds] = useState<Set<any>>(new Set());
   const [showFilterPanel, setShowFilterPanel] = useState(false);
@@ -234,6 +236,32 @@ export const DataGrid: React.FC<DataGridProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Working View v_model Sync Banner */}
+      {table.name.toLowerCase() === 'v_model' && (
+        <div className="px-5 py-2.5 bg-gradient-to-r from-orange-50 via-white to-orange-50/30 border-b border-orange-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-gray-700 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-2.5 w-2.5 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F36F21] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F36F21]"></span>
+            </span>
+            <div>
+              <span className="font-bold text-gray-950 font-ubuntu mr-1.5">Główny widok roboczy:</span>
+              <span className="text-gray-600 font-poppins">
+                Pracujesz bezpośrednio na <code className="font-mono font-semibold text-[#F36F21] bg-orange-100/70 px-1 py-0.5 rounded">v_model</code>. Wszystkie dodania, edycje i usunięcia automatycznie synchronizują tabele <code className="font-mono text-gray-800 bg-gray-100 px-1 py-0.5 rounded">Model_*</code>.
+              </span>
+            </div>
+          </div>
+          {onOpenTriggers && (
+            <button
+              onClick={onOpenTriggers}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#F36F21] bg-white hover:bg-orange-50 border border-orange-300 rounded-lg shadow-xs transition-colors whitespace-nowrap self-start sm:self-auto shrink-0"
+            >
+              <span>⚡ Skrypt Triggerów SQL</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Prominent Error Banner if query failed */}
       {error && (

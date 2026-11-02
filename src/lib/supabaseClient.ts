@@ -227,17 +227,15 @@ export async function testInformationSchemaAccess(
     });
 
     const candidates = [
+      'v_model',
       'Model',
+      'Model_Podstawowy',
+      'Model_Specyfikacja',
+      'Model_Ceny',
+      'Model_Multimedia',
       'Model_zdjecia',
-      'produkty',
-      'products',
-      'models',
       'modele',
-      'zdjecia',
-      'items',
-      'users',
-      'customers',
-      'orders'
+      'model'
     ];
     const checked = new Set<string>();
 
@@ -491,18 +489,15 @@ export async function getTablesList(): Promise<TableMeta[]> {
   // 2. Fallback probe for publishable keys (or when OpenAPI is blocked by Supabase gateway)
   if (tables.length === 0) {
     const candidates = [
+      'v_model',
       'Model',
+      'Model_Podstawowy',
+      'Model_Specyfikacja',
+      'Model_Ceny',
+      'Model_Multimedia',
       'Model_zdjecia',
-      'produkty',
-      'products',
-      'models',
       'modele',
-      'zdjecia',
-      'items',
-      'users',
-      'customers',
-      'orders',
-      'media_assets'
+      'model'
     ];
     const checked = new Set<string>();
 
@@ -526,6 +521,7 @@ export async function getTablesList(): Promise<TableMeta[]> {
             } else {
               cols = [
                 { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
+                { name: 'nazwa_modelu', dataType: 'text', isNullable: false },
                 { name: 'created_at', dataType: 'datetime', isNullable: true }
               ];
             }
@@ -549,7 +545,56 @@ export async function getTablesList(): Promise<TableMeta[]> {
   }
 
   loadSavedCustomTables();
-  return tables;
+
+  // Strict user rule: restrict only to tables starting with 'Model' and the view 'v_model'
+  const isModelRelated = (name: string) => /^(v_model|model)/i.test(name.trim());
+  const filtered = tables.filter(t => isModelRelated(t.name));
+
+  // If v_model is not discovered from server, ensure it is available as the primary working view
+  let viewModelFound = filtered.find(t => t.name.toLowerCase() === 'v_model');
+  if (!viewModelFound) {
+    viewModelFound = {
+      name: 'v_model',
+      schema: 'public',
+      isView: true,
+      description: 'Główny widok roboczy (automatycznie synchronizowany z tabelami Model_*)',
+      rowCount: undefined,
+      columns: [
+        { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
+        { name: 'nazwa_modelu', dataType: 'text', isNullable: false },
+        { name: 'seria', dataType: 'text', isNullable: false },
+        { name: 'typ_napedu', dataType: 'text', isNullable: false },
+        { name: 'udzwig_kg', dataType: 'number', isNullable: false },
+        { name: 'wysokosc_podnoszenia_mm', dataType: 'number', isNullable: false },
+        { name: 'typ_masztu', dataType: 'text', isNullable: false },
+        { name: 'cena_netto_pln', dataType: 'number', isNullable: false },
+        { name: 'waluta', dataType: 'text', isNullable: false, defaultValue: 'PLN' },
+        { name: 'rok_produkcji', dataType: 'number', isNullable: false },
+        { name: 'dostepnosc', dataType: 'text', isNullable: false },
+        { name: 'zdjecie_glowne', dataType: 'image', isNullable: true },
+        { name: 'uwagi', dataType: 'text', isNullable: true }
+      ]
+    };
+    filtered.unshift(viewModelFound);
+  }
+
+  // Sort: v_model always at the top (index 0)
+  filtered.sort((a, b) => {
+    if (a.name.toLowerCase() === 'v_model') return -1;
+    if (b.name.toLowerCase() === 'v_model') return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  filtered.forEach(t => {
+    if (t.name.toLowerCase() === 'v_model') {
+      t.isView = true;
+      if (!t.description) {
+        t.description = 'Główny widok roboczy (automatycznie synchronizowany z tabelami Model_*)';
+      }
+    }
+  });
+
+  return filtered;
 }
 
 // Quick-open or query any existing table directly by name
@@ -809,11 +854,296 @@ export async function fetchRows(
   };
 }
 
+// Helper: Synchronize v_model mutations into underlying demo Model_* tables
+function syncDemoViewModel(
+  operation: 'insert' | 'update' | 'delete',
+  payload: Record<string, any>,
+  primaryKeyValue?: any
+) {
+  const modelId = primaryKeyValue !== undefined && primaryKeyValue !== null ? primaryKeyValue : payload.id;
+  if (modelId === undefined || modelId === null) return;
+
+  // 1. Model_Podstawowy
+  const podstawowyList = getDemoData('Model_Podstawowy');
+  if (operation === 'delete') {
+    setDemoData('Model_Podstawowy', podstawowyList.filter(r => String(r.id) !== String(modelId)));
+  } else if (operation === 'insert') {
+    const row = {
+      id: modelId,
+      nazwa_modelu: payload.nazwa_modelu || '',
+      seria: payload.seria || '',
+      typ_napedu: payload.typ_napedu || '',
+      rok_produkcji: payload.rok_produkcji || new Date().getFullYear(),
+      dostepnosc: payload.dostepnosc || 'Dostępny od ręki'
+    };
+    setDemoData('Model_Podstawowy', [row, ...podstawowyList.filter(r => String(r.id) !== String(modelId))]);
+  } else if (operation === 'update') {
+    const idx = podstawowyList.findIndex(r => String(r.id) === String(modelId));
+    if (idx >= 0) {
+      podstawowyList[idx] = {
+        ...podstawowyList[idx],
+        ...(payload.nazwa_modelu !== undefined ? { nazwa_modelu: payload.nazwa_modelu } : {}),
+        ...(payload.seria !== undefined ? { seria: payload.seria } : {}),
+        ...(payload.typ_napedu !== undefined ? { typ_napedu: payload.typ_napedu } : {}),
+        ...(payload.rok_produkcji !== undefined ? { rok_produkcji: payload.rok_produkcji } : {}),
+        ...(payload.dostepnosc !== undefined ? { dostepnosc: payload.dostepnosc } : {})
+      };
+      setDemoData('Model_Podstawowy', podstawowyList);
+    }
+  }
+
+  // 2. Model_Specyfikacja
+  const specList = getDemoData('Model_Specyfikacja');
+  if (operation === 'delete') {
+    setDemoData('Model_Specyfikacja', specList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
+  } else if (operation === 'insert') {
+    const row = {
+      id: modelId,
+      model_id: modelId,
+      udzwig_kg: payload.udzwig_kg || 0,
+      wysokosc_podnoszenia_mm: payload.wysokosc_podnoszenia_mm || 0,
+      typ_masztu: payload.typ_masztu || ''
+    };
+    setDemoData('Model_Specyfikacja', [row, ...specList.filter(r => String(r.model_id) !== String(modelId))]);
+  } else if (operation === 'update') {
+    const idx = specList.findIndex(r => String(r.model_id) === String(modelId) || String(r.id) === String(modelId));
+    if (idx >= 0) {
+      specList[idx] = {
+        ...specList[idx],
+        ...(payload.udzwig_kg !== undefined ? { udzwig_kg: payload.udzwig_kg } : {}),
+        ...(payload.wysokosc_podnoszenia_mm !== undefined ? { wysokosc_podnoszenia_mm: payload.wysokosc_podnoszenia_mm } : {}),
+        ...(payload.typ_masztu !== undefined ? { typ_masztu: payload.typ_masztu } : {})
+      };
+      setDemoData('Model_Specyfikacja', specList);
+    }
+  }
+
+  // 3. Model_Ceny
+  const cenyList = getDemoData('Model_Ceny');
+  if (operation === 'delete') {
+    setDemoData('Model_Ceny', cenyList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
+  } else if (operation === 'insert') {
+    const row = {
+      id: modelId,
+      model_id: modelId,
+      cena_netto_pln: payload.cena_netto_pln || 0,
+      waluta: payload.waluta || 'PLN'
+    };
+    setDemoData('Model_Ceny', [row, ...cenyList.filter(r => String(r.model_id) !== String(modelId))]);
+  } else if (operation === 'update') {
+    const idx = cenyList.findIndex(r => String(r.model_id) === String(modelId) || String(r.id) === String(modelId));
+    if (idx >= 0) {
+      cenyList[idx] = {
+        ...cenyList[idx],
+        ...(payload.cena_netto_pln !== undefined ? { cena_netto_pln: payload.cena_netto_pln } : {}),
+        ...(payload.waluta !== undefined ? { waluta: payload.waluta } : {})
+      };
+      setDemoData('Model_Ceny', cenyList);
+    }
+  }
+
+  // 4. Model_Multimedia
+  const mediaList = getDemoData('Model_Multimedia');
+  if (operation === 'delete') {
+    setDemoData('Model_Multimedia', mediaList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
+  } else if (operation === 'insert') {
+    const row = {
+      id: modelId,
+      model_id: modelId,
+      zdjecie_glowne: payload.zdjecie_glowne || null,
+      uwagi: payload.uwagi || ''
+    };
+    setDemoData('Model_Multimedia', [row, ...mediaList.filter(r => String(r.model_id) !== String(modelId))]);
+  } else if (operation === 'update') {
+    const idx = mediaList.findIndex(r => String(r.model_id) === String(modelId) || String(r.id) === String(modelId));
+    if (idx >= 0) {
+      mediaList[idx] = {
+        ...mediaList[idx],
+        ...(payload.zdjecie_glowne !== undefined ? { zdjecie_glowne: payload.zdjecie_glowne } : {}),
+        ...(payload.uwagi !== undefined ? { uwagi: payload.uwagi } : {})
+      };
+      setDemoData('Model_Multimedia', mediaList);
+    }
+  }
+}
+
+// Generate complete PostgreSQL DDL + INSTEAD OF triggers for v_model view
+export function getViewModelTriggerSql(): string {
+  return `-- ==============================================================================
+-- SAW-TRAK: Skrypt PostgreSQL dla widoku v_model oraz triggerów INSTEAD OF
+-- Pozwala pracować wyłącznie na widoku v_model, automatycznie uzupełniając tabele Model_*
+-- ==============================================================================
+
+-- 1. Upewnij się, że tabele bazowe Model_* istnieją w schemacie public
+CREATE TABLE IF NOT EXISTS public."Model_Podstawowy" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nazwa_modelu TEXT NOT NULL,
+    seria TEXT,
+    typ_napedu TEXT,
+    rok_produkcji INTEGER,
+    dostepnosc TEXT DEFAULT 'Dostępny od ręki',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Specyfikacja" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    model_id BIGINT REFERENCES public."Model_Podstawowy"(id) ON DELETE CASCADE UNIQUE,
+    udzwig_kg NUMERIC,
+    wysokosc_podnoszenia_mm NUMERIC,
+    typ_masztu TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Ceny" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    model_id BIGINT REFERENCES public."Model_Podstawowy"(id) ON DELETE CASCADE UNIQUE,
+    cena_netto_pln NUMERIC,
+    waluta TEXT DEFAULT 'PLN',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Multimedia" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    model_id BIGINT REFERENCES public."Model_Podstawowy"(id) ON DELETE CASCADE UNIQUE,
+    zdjecie_glowne TEXT,
+    uwagi TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Utworzenie widoku v_model łączącego wszystkie tabele Model_*
+CREATE OR REPLACE VIEW public.v_model AS
+SELECT 
+    p.id,
+    p.nazwa_modelu,
+    p.seria,
+    p.typ_napedu,
+    s.udzwig_kg,
+    s.wysokosc_podnoszenia_mm,
+    s.typ_masztu,
+    c.cena_netto_pln,
+    c.waluta,
+    p.rok_produkcji,
+    p.dostepnosc,
+    m.zdjecie_glowne,
+    m.uwagi
+FROM public."Model_Podstawowy" p
+LEFT JOIN public."Model_Specyfikacja" s ON s.model_id = p.id
+LEFT JOIN public."Model_Ceny" c ON c.model_id = p.id
+LEFT JOIN public."Model_Multimedia" m ON m.model_id = p.id;
+
+-- 3. Trigger INSTEAD OF INSERT: dodanie do v_model rozdziela dane do tabel Model_*
+CREATE OR REPLACE FUNCTION trg_v_model_insert()
+RETURNS TRIGGER AS $$
+DECLARE
+    new_model_id BIGINT;
+BEGIN
+    INSERT INTO public."Model_Podstawowy" (nazwa_modelu, seria, typ_napedu, rok_produkcji, dostepnosc)
+    VALUES (NEW.nazwa_modelu, NEW.seria, NEW.typ_napedu, NEW.rok_produkcji, COALESCE(NEW.dostepnosc, 'Dostępny od ręki'))
+    RETURNING id INTO new_model_id;
+
+    NEW.id := new_model_id;
+
+    INSERT INTO public."Model_Specyfikacja" (model_id, udzwig_kg, wysokosc_podnoszenia_mm, typ_masztu)
+    VALUES (new_model_id, NEW.udzwig_kg, NEW.wysokosc_podnoszenia_mm, NEW.typ_masztu)
+    ON CONFLICT (model_id) DO UPDATE SET
+        udzwig_kg = EXCLUDED.udzwig_kg,
+        wysokosc_podnoszenia_mm = EXCLUDED.wysokosc_podnoszenia_mm,
+        typ_masztu = EXCLUDED.typ_masztu;
+
+    INSERT INTO public."Model_Ceny" (model_id, cena_netto_pln, waluta)
+    VALUES (new_model_id, NEW.cena_netto_pln, COALESCE(NEW.waluta, 'PLN'))
+    ON CONFLICT (model_id) DO UPDATE SET
+        cena_netto_pln = EXCLUDED.cena_netto_pln,
+        waluta = EXCLUDED.waluta;
+
+    INSERT INTO public."Model_Multimedia" (model_id, zdjecie_glowne, uwagi)
+    VALUES (new_model_id, NEW.zdjecie_glowne, NEW.uwagi)
+    ON CONFLICT (model_id) DO UPDATE SET
+        zdjecie_glowne = EXCLUDED.zdjecie_glowne,
+        uwagi = EXCLUDED.uwagi;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_v_model_instead_of_insert ON public.v_model;
+CREATE TRIGGER trg_v_model_instead_of_insert
+INSTEAD OF INSERT ON public.v_model
+FOR EACH ROW EXECUTE FUNCTION trg_v_model_insert();
+
+-- 4. Trigger INSTEAD OF UPDATE: edycja w v_model aktualizuje odpowiednie tabele Model_*
+CREATE OR REPLACE FUNCTION trg_v_model_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE public."Model_Podstawowy" SET
+        nazwa_modelu = COALESCE(NEW.nazwa_modelu, nazwa_modelu),
+        seria = COALESCE(NEW.seria, seria),
+        typ_napedu = COALESCE(NEW.typ_napedu, typ_napedu),
+        rok_produkcji = COALESCE(NEW.rok_produkcji, rok_produkcji),
+        dostepnosc = COALESCE(NEW.dostepnosc, dostepnosc)
+    WHERE id = OLD.id;
+
+    INSERT INTO public."Model_Specyfikacja" (model_id, udzwig_kg, wysokosc_podnoszenia_mm, typ_masztu)
+    VALUES (OLD.id, NEW.udzwig_kg, NEW.wysokosc_podnoszenia_mm, NEW.typ_masztu)
+    ON CONFLICT (model_id) DO UPDATE SET
+        udzwig_kg = COALESCE(EXCLUDED.udzwig_kg, public."Model_Specyfikacja".udzwig_kg),
+        wysokosc_podnoszenia_mm = COALESCE(EXCLUDED.wysokosc_podnoszenia_mm, public."Model_Specyfikacja".wysokosc_podnoszenia_mm),
+        typ_masztu = COALESCE(EXCLUDED.typ_masztu, public."Model_Specyfikacja".typ_masztu);
+
+    INSERT INTO public."Model_Ceny" (model_id, cena_netto_pln, waluta)
+    VALUES (OLD.id, NEW.cena_netto_pln, COALESCE(NEW.waluta, 'PLN'))
+    ON CONFLICT (model_id) DO UPDATE SET
+        cena_netto_pln = COALESCE(EXCLUDED.cena_netto_pln, public."Model_Ceny".cena_netto_pln),
+        waluta = COALESCE(EXCLUDED.waluta, public."Model_Ceny".waluta);
+
+    INSERT INTO public."Model_Multimedia" (model_id, zdjecie_glowne, uwagi)
+    VALUES (OLD.id, NEW.zdjecie_glowne, NEW.uwagi)
+    ON CONFLICT (model_id) DO UPDATE SET
+        zdjecie_glowne = COALESCE(EXCLUDED.zdjecie_glowne, public."Model_Multimedia".zdjecie_glowne),
+        uwagi = COALESCE(EXCLUDED.uwagi, public."Model_Multimedia".uwagi);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_v_model_instead_of_update ON public.v_model;
+CREATE TRIGGER trg_v_model_instead_of_update
+INSTEAD OF UPDATE ON public.v_model
+FOR EACH ROW EXECUTE FUNCTION trg_v_model_update();
+
+-- 5. Trigger INSTEAD OF DELETE: usunięcie z v_model kaskadowo usuwa powiązane rekordy
+CREATE OR REPLACE FUNCTION trg_v_model_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM public."Model_Podstawowy" WHERE id = OLD.id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_v_model_instead_of_delete ON public.v_model;
+CREATE TRIGGER trg_v_model_instead_of_delete
+INSTEAD OF DELETE ON public.v_model
+FOR EACH ROW EXECUTE FUNCTION trg_v_model_delete();
+
+-- 6. Włączenie RLS i dodanie uprawnień publicznych
+ALTER TABLE public."Model_Podstawowy" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Specyfikacja" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Ceny" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Multimedia" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Dostęp publiczny Model_Podstawowy" ON public."Model_Podstawowy" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Specyfikacja" ON public."Model_Specyfikacja" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Ceny" ON public."Model_Ceny" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Multimedia" ON public."Model_Multimedia" FOR ALL USING (true) WITH CHECK (true);
+`;
+}
+
 // Insert single row
 export async function insertRow(tableName: string, rowData: Record<string, any>): Promise<any> {
+  const isViewModel = tableName.toLowerCase() === 'v_model';
+
   if (currentConfig.isDemo) {
     const current = getDemoData(tableName);
-    // Auto-generate id if missing
     if (!rowData.id) {
       const maxId = current.reduce((max, r) => (typeof r.id === 'number' && r.id > max ? r.id : max), 0);
       rowData.id = maxId + 1;
@@ -823,14 +1153,77 @@ export async function insertRow(tableName: string, rowData: Record<string, any>)
     }
     const updated = [rowData, ...current];
     setDemoData(tableName, updated);
+
+    // Auto-propagate to underlying tables if inserted into v_model
+    if (isViewModel) {
+      syncDemoViewModel('insert', rowData);
+    }
     return rowData;
   }
 
   const supabase = getSupabase();
   if (!supabase) throw new Error('Brak połączenia z Supabase.');
 
+  // Try direct insert on the target table / view
   const { data, error } = await supabase.from(tableName).insert(rowData).select().single();
-  if (error) throw new Error(error.message);
+
+  if (error) {
+    // If v_model cannot be inserted directly (e.g. multi-table view without INSTEAD OF trigger in DB)
+    const isViewError =
+      isViewModel &&
+      (error.message.toLowerCase().includes('view') ||
+        error.message.toLowerCase().includes('not automatically updatable') ||
+        error.code === '42809');
+
+    if (isViewError) {
+      // Intelligently decompose and insert into Model_* base tables
+      const podstawowyPayload = {
+        nazwa_modelu: rowData.nazwa_modelu || '',
+        seria: rowData.seria || '',
+        typ_napedu: rowData.typ_napedu || '',
+        rok_produkcji: rowData.rok_produkcji,
+        dostepnosc: rowData.dostepnosc || 'Dostępny od ręki'
+      };
+      const { data: insertedModel, error: pErr } = await supabase
+        .from('Model_Podstawowy')
+        .insert(podstawowyPayload)
+        .select()
+        .single();
+
+      if (pErr) throw new Error(`Błąd zapisu tabeli Model_Podstawowy: ${pErr.message}`);
+      const newId = insertedModel.id;
+
+      if (rowData.udzwig_kg !== undefined || rowData.wysokosc_podnoszenia_mm !== undefined || rowData.typ_masztu !== undefined) {
+        await supabase.from('Model_Specyfikacja').insert({
+          model_id: newId,
+          udzwig_kg: rowData.udzwig_kg,
+          wysokosc_podnoszenia_mm: rowData.wysokosc_podnoszenia_mm,
+          typ_masztu: rowData.typ_masztu
+        });
+      }
+
+      if (rowData.cena_netto_pln !== undefined || rowData.waluta !== undefined) {
+        await supabase.from('Model_Ceny').insert({
+          model_id: newId,
+          cena_netto_pln: rowData.cena_netto_pln,
+          waluta: rowData.waluta || 'PLN'
+        });
+      }
+
+      if (rowData.zdjecie_glowne !== undefined || rowData.uwagi !== undefined) {
+        await supabase.from('Model_Multimedia').insert({
+          model_id: newId,
+          zdjecie_glowne: rowData.zdjecie_glowne,
+          uwagi: rowData.uwagi
+        });
+      }
+
+      return { id: newId, ...rowData };
+    }
+
+    throw new Error(error.message);
+  }
+
   return data;
 }
 
@@ -843,49 +1236,26 @@ export async function bulkInsertRows(
   const errors: { row: number; error: string }[] = [];
 
   if (currentConfig.isDemo) {
-    const current = getDemoData(tableName);
-    let maxId = current.reduce((max, r) => (typeof r.id === 'number' && r.id > max ? r.id : max), 0);
-
-    const newRows = rows.map((r, idx) => {
-      const row = { ...r };
-      if (!row.id) {
-        maxId += 1;
-        row.id = maxId;
+    for (let i = 0; i < rows.length; i++) {
+      try {
+        await insertRow(tableName, rows[i]);
+        successCount++;
+      } catch (err: any) {
+        errors.push({ row: i + 1, error: err.message });
       }
-      if (!row.created_at) {
-        row.created_at = new Date().toISOString();
-      }
-      successCount++;
-      return row;
-    });
-
-    setDemoData(tableName, [...newRows, ...current]);
+    }
     return { successCount, errors };
   }
 
   const supabase = getSupabase();
   if (!supabase) throw new Error('Brak połączenia z Supabase.');
 
-  // Insert in batches of 50 to avoid payload size and rate limits
-  const BATCH_SIZE = 50;
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const batch = rows.slice(i, i + BATCH_SIZE);
-    const { data, error } = await supabase.from(tableName).insert(batch).select();
-
-    if (error) {
-      // If batch fails, attempt row-by-row for granular feedback
-      for (let j = 0; j < batch.length; j++) {
-        const singleRow = batch[j];
-        const rowNum = i + j + 1;
-        const singleRes = await supabase.from(tableName).insert(singleRow);
-        if (singleRes.error) {
-          errors.push({ row: rowNum, error: singleRes.error.message });
-        } else {
-          successCount++;
-        }
-      }
-    } else {
-      successCount += (data?.length || batch.length);
+  for (let i = 0; i < rows.length; i++) {
+    try {
+      await insertRow(tableName, rows[i]);
+      successCount++;
+    } catch (err: any) {
+      errors.push({ row: i + 1, error: err.message });
     }
   }
 
@@ -899,12 +1269,19 @@ export async function updateRow(
   primaryKeyValue: any,
   updatedData: Record<string, any>
 ): Promise<any> {
+  const isViewModel = tableName.toLowerCase() === 'v_model';
+
   if (currentConfig.isDemo) {
     const current = getDemoData(tableName);
     const index = current.findIndex(r => String(r[primaryKeyCol]) === String(primaryKeyValue));
     if (index === -1) throw new Error(`Nie znaleziono rekordu o ${primaryKeyCol} = ${primaryKeyValue}`);
     current[index] = { ...current[index], ...updatedData };
     setDemoData(tableName, current);
+
+    // Auto-propagate to underlying tables if updated in v_model
+    if (isViewModel) {
+      syncDemoViewModel('update', updatedData, primaryKeyValue);
+    }
     return current[index];
   }
 
@@ -918,16 +1295,72 @@ export async function updateRow(
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    const isViewError =
+      isViewModel &&
+      (error.message.toLowerCase().includes('view') ||
+        error.message.toLowerCase().includes('not automatically updatable') ||
+        error.code === '42809');
+
+    if (isViewError) {
+      // Decomposed update across Model_* base tables
+      // 1. Model_Podstawowy
+      const pData: Record<string, any> = {};
+      ['nazwa_modelu', 'seria', 'typ_napedu', 'rok_produkcji', 'dostepnosc'].forEach(k => {
+        if (updatedData[k] !== undefined) pData[k] = updatedData[k];
+      });
+      if (Object.keys(pData).length > 0) {
+        await supabase.from('Model_Podstawowy').update(pData).eq('id', primaryKeyValue);
+      }
+
+      // 2. Model_Specyfikacja
+      const sData: Record<string, any> = {};
+      ['udzwig_kg', 'wysokosc_podnoszenia_mm', 'typ_masztu'].forEach(k => {
+        if (updatedData[k] !== undefined) sData[k] = updatedData[k];
+      });
+      if (Object.keys(sData).length > 0) {
+        await supabase.from('Model_Specyfikacja').update(sData).eq('model_id', primaryKeyValue);
+      }
+
+      // 3. Model_Ceny
+      const cData: Record<string, any> = {};
+      ['cena_netto_pln', 'waluta'].forEach(k => {
+        if (updatedData[k] !== undefined) cData[k] = updatedData[k];
+      });
+      if (Object.keys(cData).length > 0) {
+        await supabase.from('Model_Ceny').update(cData).eq('model_id', primaryKeyValue);
+      }
+
+      // 4. Model_Multimedia
+      const mData: Record<string, any> = {};
+      ['zdjecie_glowne', 'uwagi'].forEach(k => {
+        if (updatedData[k] !== undefined) mData[k] = updatedData[k];
+      });
+      if (Object.keys(mData).length > 0) {
+        await supabase.from('Model_Multimedia').update(mData).eq('model_id', primaryKeyValue);
+      }
+
+      return { id: primaryKeyValue, ...updatedData };
+    }
+
+    throw new Error(error.message);
+  }
+
   return data;
 }
 
 // Delete single row
 export async function deleteRow(tableName: string, primaryKeyCol: string, primaryKeyValue: any): Promise<void> {
+  const isViewModel = tableName.toLowerCase() === 'v_model';
+
   if (currentConfig.isDemo) {
     const current = getDemoData(tableName);
     const filtered = current.filter(r => String(r[primaryKeyCol]) !== String(primaryKeyValue));
     setDemoData(tableName, filtered);
+
+    if (isViewModel) {
+      syncDemoViewModel('delete', {}, primaryKeyValue);
+    }
     return;
   }
 
@@ -935,7 +1368,19 @@ export async function deleteRow(tableName: string, primaryKeyCol: string, primar
   if (!supabase) throw new Error('Brak połączenia z Supabase.');
 
   const { error } = await supabase.from(tableName).delete().eq(primaryKeyCol, primaryKeyValue);
-  if (error) throw new Error(error.message);
+  if (error) {
+    const isViewError =
+      isViewModel &&
+      (error.message.toLowerCase().includes('view') ||
+        error.message.toLowerCase().includes('not automatically updatable') ||
+        error.code === '42809');
+
+    if (isViewError) {
+      await supabase.from('Model_Podstawowy').delete().eq('id', primaryKeyValue);
+      return;
+    }
+    throw new Error(error.message);
+  }
 }
 
 // Bulk delete rows

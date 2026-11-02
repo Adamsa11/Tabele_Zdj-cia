@@ -18,6 +18,8 @@ export interface TableMeta {
   rowCount?: number;
   columns: ColumnMeta[];
   isCustom?: boolean;
+  isView?: boolean;
+  description?: string;
 }
 
 export interface SupabaseConfig {

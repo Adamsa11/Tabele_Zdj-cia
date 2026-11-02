@@ -29,6 +29,7 @@ import { CreateTableModal } from './components/CreateTableModal';
 import { StorageExplorerModal } from './components/StorageExplorerModal';
 import { ConnectionModal } from './components/ConnectionModal';
 import { DiagnosticModal } from './components/DiagnosticModal';
+import { ViewModelTriggerModal } from './components/ViewModelTriggerModal';
 import { ImageLightbox } from './components/ImageLightbox';
 import { ToastContainer } from './components/Toast';
 
@@ -61,6 +62,7 @@ export default function App() {
   const [isStorageOpen, setIsStorageOpen] = useState(false);
   const [isConnectionOpen, setIsConnectionOpen] = useState(false);
   const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
+  const [isTriggersOpen, setIsTriggersOpen] = useState(false);
   const [storagePickerCallback, setStoragePickerCallback] = useState<((url: string) => void) | null>(null);
 
   // Lightbox
@@ -97,7 +99,11 @@ export default function App() {
             return;
           }
         }
-        if (!selectedTable || !list.some(t => t.name === selectedTable.name)) {
+        // Strict user preference: prioritize working directly on v_model
+        const viewModel = list.find(t => t.name.toLowerCase() === 'v_model');
+        if (viewModel) {
+          setSelectedTable(viewModel);
+        } else if (!selectedTable || !list.some(t => t.name === selectedTable.name)) {
           setSelectedTable(list[0]);
         }
       } else {
@@ -311,6 +317,7 @@ export default function App() {
           }}
           onOpenSettings={() => setIsConnectionOpen(true)}
           onOpenDiagnostics={() => setIsDiagnosticOpen(true)}
+          onOpenTriggers={() => setIsTriggersOpen(true)}
           onQuickOpenTable={handleQuickOpenTable}
           config={config}
         />
@@ -346,6 +353,7 @@ export default function App() {
               onShowLightbox={handleShowLightbox}
               onRefresh={loadRows}
               onOpenSettings={() => setIsConnectionOpen(true)}
+              onOpenTriggers={() => setIsTriggersOpen(true)}
             />
           ) : (
             <StarterHub
@@ -445,6 +453,13 @@ export default function App() {
           setIsDiagnosticOpen(false);
           setIsConnectionOpen(true);
         }}
+        onToast={showToast}
+      />
+
+      {/* Modal Skryptu Triggerów PostgreSQL dla v_model */}
+      <ViewModelTriggerModal
+        isOpen={isTriggersOpen}
+        onClose={() => setIsTriggersOpen(false)}
         onToast={showToast}
       />
 

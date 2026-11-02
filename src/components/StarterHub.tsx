@@ -114,11 +114,11 @@ export const StarterHub: React.FC<StarterHubProps> = ({
                   Rekomendowane
                 </span>
                 <h3 className="text-sm font-bold text-[#161616]">
-                  Szybki start: Automatyczny skrypt SQL (Tabela + Storage + Uprawnienia RLS)
+                  Szybki start: Automatyczny skrypt SQL (Widok v_model + Tabele Model_* + Triggery + Storage)
                 </h3>
               </div>
               <p className="text-xs text-gray-600 leading-relaxed max-w-2xl">
-                Jednorazowy kod SQL, który w 5 sekund utworzy w Twojej bazie tabelę <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">produkty</code> ze zdjęciami, skonfiguruje pełne uprawnienia RLS (odczyt, dodawanie, edycja, usuwanie) oraz utworzy publiczny bucket <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">images</code> na multimedia.
+                Jednorazowy kod SQL, który utworzy widok roboczy <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">v_model</code>, tabele bazowe <code className="text-gray-800 font-semibold bg-gray-100 px-1 py-0.5 rounded">Model_*</code>, automatyczne triggery <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">INSTEAD OF</code>, skonfiguruje pełne uprawnienia RLS oraz publiczny bucket <code className="text-[#F36F21] font-semibold bg-orange-50 px-1 py-0.5 rounded">zdjecia_modeli</code> na fotografie maszyn.
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export const StarterHub: React.FC<StarterHubProps> = ({
               className="px-4 py-2.5 text-xs font-semibold text-white bg-[#F36F21] hover:bg-[#df5d12] rounded-xl transition-all shadow-sm flex items-center gap-2 active:translate-y-px"
             >
               {copiedSql ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
-              <span>{copiedSql ? 'Skopiowano gotowy kod SQL!' : 'Kopiuj gotowy skrypt SQL (Tabele + Storage)'}</span>
+              <span>{copiedSql ? 'Skopiowano gotowy kod SQL!' : 'Kopiuj gotowy skrypt SQL (v_model + Model_*)'}</span>
             </button>
 
             <a
@@ -166,17 +166,17 @@ export const StarterHub: React.FC<StarterHubProps> = ({
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-[#161616] font-semibold text-xs">
                 <Database className="w-4 h-4 text-[#F36F21]" />
-                <span>Otwórz dowolną tabelę po nazwie</span>
+                <span>Otwórz tabelę lub widok</span>
               </div>
               <p className="text-[11px] text-gray-500 leading-relaxed">
-                Jeśli masz już własną tabelę w Supabase (np. <code>wozki</code>, <code>czesci</code>, <code>klienci</code>), wpisz jej nazwę:
+                Jeśli masz już widok lub tabelę w Supabase (np. <code>v_model</code>, <code>Model_Podstawowy</code>), wpisz nazwę:
               </p>
             </div>
 
             <form onSubmit={handleOpenTable} className="flex items-center gap-2 pt-1">
               <input
                 type="text"
-                placeholder="np. produkty, wozki..."
+                placeholder="np. v_model, Model_Podstawowy..."
                 value={quickTableName}
                 onChange={e => setQuickTableName(e.target.value)}
                 className="flex-1 px-3 py-2 text-xs font-mono bg-[#F9F9F9] border border-gray-200 rounded-lg text-[#161616] placeholder-gray-400 focus:outline-none focus:border-[#F36F21] focus:bg-white transition-colors"

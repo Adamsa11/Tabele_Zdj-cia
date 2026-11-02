@@ -16,7 +16,7 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
   onTableCreated,
   onToast
 }) => {
-  const [tableName, setTableName] = useState('');
+  const [tableName, setTableName] = useState('Model_');
   const [columns, setColumns] = useState<ColumnMeta[]>([
     { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
     { name: 'nazwa_modelu', dataType: 'text', isPrimary: false, isNullable: false },
@@ -73,10 +73,13 @@ export const CreateTableModal: React.FC<CreateTableModalProps> = ({
   };
 
   const handleSave = () => {
-    const cleanName = tableName.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
-    if (!cleanName) {
-      alert('Podaj poprawną nazwę tabeli.');
+    let cleanName = tableName.trim();
+    if (!cleanName || cleanName === 'Model_') {
+      onToast('error', 'Podaj nazwę tabeli', 'Nazwa tabeli musi zaczynać się od Model (np. Model_Czesci).');
       return;
+    }
+    if (!cleanName.toLowerCase().startsWith('model')) {
+      cleanName = `Model_${cleanName}`;
     }
 
     const newTable: TableMeta = {

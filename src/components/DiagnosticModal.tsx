@@ -186,7 +186,7 @@ export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({
             <form onSubmit={handleProbeTable} className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Wpisz nazwę tabeli (np. produkty, wozki, orders)"
+                placeholder="Wpisz nazwę (np. v_model, Model_Podstawowy, Model_Ceny)"
                 value={probeTableName}
                 onChange={e => setProbeTableName(e.target.value)}
                 className="flex-1 px-3 py-2 text-xs font-mono bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#F36F21]"
@@ -287,24 +287,34 @@ export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <button
                   type="button"
-                  onClick={handleCreateImagesBucket}
+                  onClick={async () => {
+                    setCreatingBucket(true);
+                    try {
+                      await createStorageBucket('zdjecia_modeli');
+                      onToast('success', 'Utworzono bucket "zdjecia_modeli"', 'Magazyn zdjęć jest gotowy do wgrywania plików.');
+                    } catch (e: any) {
+                      onToast('error', 'Błąd tworzenia bucketu', e.message);
+                    } finally {
+                      setCreatingBucket(false);
+                    }
+                  }}
                   disabled={creatingBucket}
                   className="px-3.5 py-1.5 bg-[#F36F21] hover:bg-[#df5d12] disabled:opacity-50 text-white font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs"
                 >
                   {creatingBucket && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>Utwórz publiczny bucket "images"</span>
+                  <span>Utwórz bucket "zdjecia_modeli"</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    const sql = `-- Zezwolenie na publiczny dostęp do Storage w Supabase:\nINSERT INTO storage.buckets (id, name, public) VALUES ('images', 'images', true) ON CONFLICT (id) DO NOTHING;\nCREATE POLICY "Publiczne zdjecia odczyt" ON storage.objects FOR SELECT USING (bucket_id = 'images');\nCREATE POLICY "Publiczne zdjecia upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'images');`;
+                    const sql = `-- Utworzenie publicznego magazynu zdjęć modeli w Supabase:\nINSERT INTO storage.buckets (id, name, public) VALUES ('zdjecia_modeli', 'zdjecia_modeli', true) ON CONFLICT (id) DO NOTHING;\nCREATE POLICY "Publiczne zdjecia modeli odczyt" ON storage.objects FOR SELECT USING (bucket_id = 'zdjecia_modeli');\nCREATE POLICY "Publiczne zdjecia modeli upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'zdjecia_modeli');`;
                     copyToClipboard(sql, 'storage-sql');
                   }}
                   className="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg border border-gray-300 font-medium transition-colors flex items-center gap-1.5 shadow-2xs"
                 >
                   {copiedSql === 'storage-sql' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
-                  <span>Kopiuj SQL konfiguracji Storage</span>
+                  <span>Kopiuj SQL Storage dla zdjecia_modeli</span>
                 </button>
               </div>
             </div>
