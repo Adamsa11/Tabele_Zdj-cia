@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { ColumnMeta, FilterCondition, SortCondition, StorageBucketItem, StorageFileItem, SupabaseConfig, TableMeta } from '../types';
+import { ColumnMeta, FilterCondition, SortCondition, StorageBucketItem, StorageFileItem, SupabaseConfig, TableMeta, ValidatedOption } from '../types';
 import { DEMO_DATA, DEMO_STORAGE_BUCKETS, DEMO_STORAGE_FILES, DEMO_TABLES } from './demoData';
 
 const CONFIG_STORAGE_KEY = 'supatable_config_v1';
@@ -490,11 +490,15 @@ export async function getTablesList(): Promise<TableMeta[]> {
   if (tables.length === 0) {
     const candidates = [
       'v_model',
-      'Model',
       'Model_Podstawowy',
+      'Model_Rodzaj',
+      'Model_Gwarancja_Detal',
+      'Model_Gwarancja_Hurt',
+      'Model_Gwarancje',
       'Model_Specyfikacja',
       'Model_Ceny',
       'Model_Multimedia',
+      'Model',
       'Model_zdjecia',
       'modele',
       'model'
@@ -563,10 +567,28 @@ export async function getTablesList(): Promise<TableMeta[]> {
         { name: 'id', dataType: 'number', isPrimary: true, isNullable: false },
         { name: 'nazwa_modelu', dataType: 'text', isNullable: false },
         { name: 'seria', dataType: 'text', isNullable: false },
+        {
+          name: 'rodzaj',
+          dataType: 'text',
+          isNullable: false,
+          foreignKey: { table: 'Model_Rodzaj', column: 'nazwa' }
+        },
         { name: 'typ_napedu', dataType: 'text', isNullable: false },
         { name: 'udzwig_kg', dataType: 'number', isNullable: false },
         { name: 'wysokosc_podnoszenia_mm', dataType: 'number', isNullable: false },
         { name: 'typ_masztu', dataType: 'text', isNullable: false },
+        {
+          name: 'gwarancja_detal',
+          dataType: 'text',
+          isNullable: false,
+          foreignKey: { table: 'Model_Gwarancja_Detal', column: 'nazwa' }
+        },
+        {
+          name: 'gwarancja_hurt',
+          dataType: 'text',
+          isNullable: false,
+          foreignKey: { table: 'Model_Gwarancja_Hurt', column: 'nazwa' }
+        },
         { name: 'cena_netto_pln', dataType: 'number', isNullable: false },
         { name: 'waluta', dataType: 'text', isNullable: false, defaultValue: 'PLN' },
         { name: 'rok_produkcji', dataType: 'number', isNullable: false },
@@ -872,6 +894,7 @@ function syncDemoViewModel(
       id: modelId,
       nazwa_modelu: payload.nazwa_modelu || '',
       seria: payload.seria || '',
+      rodzaj: payload.rodzaj || 'Wózek czołowy elektryczny',
       typ_napedu: payload.typ_napedu || '',
       rok_produkcji: payload.rok_produkcji || new Date().getFullYear(),
       dostepnosc: payload.dostepnosc || 'Dostępny od ręki'
@@ -884,6 +907,7 @@ function syncDemoViewModel(
         ...podstawowyList[idx],
         ...(payload.nazwa_modelu !== undefined ? { nazwa_modelu: payload.nazwa_modelu } : {}),
         ...(payload.seria !== undefined ? { seria: payload.seria } : {}),
+        ...(payload.rodzaj !== undefined ? { rodzaj: payload.rodzaj } : {}),
         ...(payload.typ_napedu !== undefined ? { typ_napedu: payload.typ_napedu } : {}),
         ...(payload.rok_produkcji !== undefined ? { rok_produkcji: payload.rok_produkcji } : {}),
         ...(payload.dostepnosc !== undefined ? { dostepnosc: payload.dostepnosc } : {})
@@ -892,7 +916,31 @@ function syncDemoViewModel(
     }
   }
 
-  // 2. Model_Specyfikacja
+  // 2. Model_Gwarancje (Gwarancja detaliczna i hurtowa)
+  const gwarancjeList = getDemoData('Model_Gwarancje');
+  if (operation === 'delete') {
+    setDemoData('Model_Gwarancje', gwarancjeList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
+  } else if (operation === 'insert') {
+    const row = {
+      id: modelId,
+      model_id: modelId,
+      gwarancja_detal: payload.gwarancja_detal || '24 miesiące / 2000 mth (Rozszerzona)',
+      gwarancja_hurt: payload.gwarancja_hurt || '12 miesięcy / 1000 mth (Hurt Standard)'
+    };
+    setDemoData('Model_Gwarancje', [row, ...gwarancjeList.filter(r => String(r.model_id) !== String(modelId))]);
+  } else if (operation === 'update') {
+    const idx = gwarancjeList.findIndex(r => String(r.model_id) === String(modelId) || String(r.id) === String(modelId));
+    if (idx >= 0) {
+      gwarancjeList[idx] = {
+        ...gwarancjeList[idx],
+        ...(payload.gwarancja_detal !== undefined ? { gwarancja_detal: payload.gwarancja_detal } : {}),
+        ...(payload.gwarancja_hurt !== undefined ? { gwarancja_hurt: payload.gwarancja_hurt } : {})
+      };
+      setDemoData('Model_Gwarancje', gwarancjeList);
+    }
+  }
+
+  // 3. Model_Specyfikacja
   const specList = getDemoData('Model_Specyfikacja');
   if (operation === 'delete') {
     setDemoData('Model_Specyfikacja', specList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
@@ -918,7 +966,7 @@ function syncDemoViewModel(
     }
   }
 
-  // 3. Model_Ceny
+  // 4. Model_Ceny
   const cenyList = getDemoData('Model_Ceny');
   if (operation === 'delete') {
     setDemoData('Model_Ceny', cenyList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
@@ -942,7 +990,7 @@ function syncDemoViewModel(
     }
   }
 
-  // 4. Model_Multimedia
+  // 5. Model_Multimedia
   const mediaList = getDemoData('Model_Multimedia');
   if (operation === 'delete') {
     setDemoData('Model_Multimedia', mediaList.filter(r => String(r.model_id) !== String(modelId) && String(r.id) !== String(modelId)));
@@ -967,18 +1015,183 @@ function syncDemoViewModel(
   }
 }
 
+/**
+ * Pobiera opcje z walidowanych tabel słownikowych dla pól takich jak:
+ * - 'rodzaj' (z tabeli Model_Rodzaj / rodzaj)
+ * - 'gwarancja_detal' (z tabeli Model_Gwarancja_Detal / gwarancja_detal)
+ * - 'gwarancja_hurt' (z tabeli Model_Gwarancja_Hurt / gwarancja_hurt)
+ */
+export async function fetchValidatedTableOptions(columnName: string): Promise<ValidatedOption[]> {
+  const col = columnName.toLowerCase();
+  let candidateTables: string[] = [];
+
+  if (col.includes('rodzaj')) {
+    candidateTables = ['Model_Rodzaj', 'Model_Rodzaje', 'rodzaj', 'rodzaje', 'Model_Typ', 'slownik_rodzaj'];
+  } else if (col.includes('gwarancja_detal')) {
+    candidateTables = ['Model_Gwarancja_Detal', 'Model_Gwarancje_Detal', 'gwarancja_detal', 'slownik_gwarancja_detal', 'Model_Gwarancja'];
+  } else if (col.includes('gwarancja_hurt')) {
+    candidateTables = ['Model_Gwarancja_Hurt', 'Model_Gwarancje_Hurt', 'gwarancja_hurt', 'slownik_gwarancja_hurt'];
+  } else {
+    return [];
+  }
+
+  // 1. Sprawdź bazę Supabase w trybie na żywo
+  const supabase = getSupabase();
+  if (supabase && !currentConfig.isDemo) {
+    for (const tableName of candidateTables) {
+      try {
+        const { data, error } = await supabase.from(tableName).select('*').limit(50);
+        if (!error && data && data.length > 0) {
+          return data.map((row: any) => {
+            const val = row.nazwa ?? row.name ?? row.wartosc ?? row[columnName] ?? String(row.id);
+            const desc = row.opis ?? row.zakres ?? row.warunki_b2b ?? (row.kod ? `Kod: ${row.kod}` : undefined);
+            return {
+              value: String(val),
+              label: String(val),
+              sourceTable: tableName,
+              description: desc
+            };
+          });
+        }
+      } catch {
+        // Kontynuuj do kolejnej tabeli
+      }
+    }
+  }
+
+  // 2. Sprawdź tabele demo lub zapisane w localStorage
+  for (const tableName of candidateTables) {
+    const demoItems = getDemoData(tableName);
+    if (demoItems && demoItems.length > 0) {
+      return demoItems.map(row => {
+        const val = row.nazwa ?? row.name ?? row.wartosc ?? row[columnName] ?? String(row.id);
+        const desc = row.opis ?? row.zakres ?? row.warunki_b2b ?? (row.kod ? `Kod: ${row.kod}` : undefined);
+        return {
+          value: String(val),
+          label: String(val),
+          sourceTable: tableName,
+          description: desc
+        };
+      });
+    }
+  }
+
+  // 3. Sprawdzone wartości domyślne Saw-Trak (gdy tabela nie została jeszcze zasilana w PostgreSQL)
+  if (col.includes('rodzaj')) {
+    return [
+      { value: 'Wózek czołowy elektryczny', label: 'Wózek czołowy elektryczny', sourceTable: 'Model_Rodzaj', description: 'Li-Ion / kwasowy 3 i 4-kołowy' },
+      { value: 'Wózek czołowy spalinowy (Diesel)', label: 'Wózek czołowy spalinowy (Diesel)', sourceTable: 'Model_Rodzaj', description: 'Silnik Kubota / Mitsubishi' },
+      { value: 'Wózek czołowy gazowy (LPG)', label: 'Wózek czołowy gazowy (LPG)', sourceTable: 'Model_Rodzaj', description: 'Niskoemisyjny silnik gazowy' },
+      { value: 'Wózek wysokiego składowania (Reach Truck)', label: 'Wózek wysokiego składowania (Reach Truck)', sourceTable: 'Model_Rodzaj', description: 'Maszt wysuwny do 12.5m' },
+      { value: 'Elektryczny wózek paletowy (Paleciak)', label: 'Elektryczny wózek paletowy (Paleciak)', sourceTable: 'Model_Rodzaj', description: 'Kompaktowy wózek prowadzony' },
+      { value: 'Wózek prowadzony masztowy (Stacker)', label: 'Wózek prowadzony masztowy (Stacker)', sourceTable: 'Model_Rodzaj', description: 'Układnica magazynowa z masztem' },
+      { value: 'Wózek boczny wielokierunkowy', label: 'Wózek boczny wielokierunkowy', sourceTable: 'Model_Rodzaj', description: 'Do dłużyc i profili' }
+    ];
+  } else if (col.includes('gwarancja_detal')) {
+    return [
+      { value: '12 miesięcy / 1000 mth (Standard B2C)', label: '12 miesięcy / 1000 mth (Standard B2C)', sourceTable: 'Model_Gwarancja_Detal', description: 'Podstawowa gwarancja Saw-Trak' },
+      { value: '24 miesiące / 2000 mth (Rozszerzona)', label: '24 miesiące / 2000 mth (Rozszerzona)', sourceTable: 'Model_Gwarancja_Detal', description: 'Pełna ochrona napędu i hydrauliki' },
+      { value: '36 miesięcy / 3000 mth (Saw-Trak Care)', label: '36 miesięcy / 3000 mth (Saw-Trak Care)', sourceTable: 'Model_Gwarancja_Detal', description: 'Pakiet serwisowy VIP z UDT' },
+      { value: '60 miesięcy / 5000 mth (Li-Ion Ultra)', label: '60 miesięcy / 5000 mth (Li-Ion Ultra)', sourceTable: 'Model_Gwarancja_Detal', description: 'Gwarancja na baterię Li-Ion' },
+      { value: 'Stan zastany (Bez gwarancji)', label: 'Stan zastany (Bez gwarancji)', sourceTable: 'Model_Gwarancja_Detal', description: 'Sprzęt komisowy / używany' }
+    ];
+  } else if (col.includes('gwarancja_hurt')) {
+    return [
+      { value: '6 miesięcy na podzespoły główne (B2B)', label: '6 miesięcy na podzespoły główne (B2B)', sourceTable: 'Model_Gwarancja_Hurt', description: 'Silnik, skrzynia, pompa' },
+      { value: '12 miesięcy / 1000 mth (Hurt Standard)', label: '12 miesięcy / 1000 mth (Hurt Standard)', sourceTable: 'Model_Gwarancja_Hurt', description: 'Wymagane przeglądy co 250 mth' },
+      { value: '24 miesiące na układ napędowy i Li-Ion', label: '24 miesiące na układ napędowy i Li-Ion', sourceTable: 'Model_Gwarancja_Hurt', description: 'Dla autoryzowanych dealerów' },
+      { value: 'Gwarancja rozruchowa 30 dni', label: 'Gwarancja rozruchowa 30 dni', sourceTable: 'Model_Gwarancja_Hurt', description: 'Weryfikacja sprawności przy odbiorze' },
+      { value: 'Wyłączenie rękojmi hurtowej (As-Is B2B)', label: 'Wyłączenie rękojmi hurtowej (As-Is B2B)', sourceTable: 'Model_Gwarancja_Hurt', description: 'Cena hurtowa bez roszczeń' }
+    ];
+  }
+
+  return [];
+}
+
+/**
+ * Dodaje nową opcję do walidowanej tabeli słownikowej
+ */
+export async function addOptionToValidatedTable(columnName: string, newValue: string, description?: string): Promise<void> {
+  const col = columnName.toLowerCase();
+  let targetTable = 'Model_Rodzaj';
+  if (col.includes('gwarancja_detal')) targetTable = 'Model_Gwarancja_Detal';
+  else if (col.includes('gwarancja_hurt')) targetTable = 'Model_Gwarancja_Hurt';
+
+  if (currentConfig.isDemo) {
+    const list = getDemoData(targetTable);
+    const maxId = list.reduce((m, r) => (typeof r.id === 'number' && r.id > m ? r.id : m), 0);
+    const newRow: Record<string, any> = {
+      id: maxId + 1,
+      nazwa: newValue.trim(),
+      kod: newValue.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_').slice(0, 20),
+      opis: description || 'Dodano przez edycję rekordu'
+    };
+    if (targetTable.includes('Gwarancja')) {
+      newRow.okres_miesiace = 12;
+      newRow.limit_mth = 1000;
+      newRow.zakres = description || 'Standardowy';
+      newRow.warunki_b2b = description || 'Standardowy';
+    }
+    setDemoData(targetTable, [...list, newRow]);
+    return;
+  }
+
+  const supabase = getSupabase();
+  if (!supabase) throw new Error('Brak połączenia z Supabase.');
+
+  const payload: Record<string, any> = {
+    nazwa: newValue.trim(),
+    opis: description || 'Dodano przez edycję rekordu'
+  };
+  if (targetTable === 'Model_Rodzaj') {
+    payload.kod = newValue.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_').slice(0, 20);
+  }
+  await supabase.from(targetTable).insert(payload);
+}
+
 // Generate complete PostgreSQL DDL + INSTEAD OF triggers for v_model view
 export function getViewModelTriggerSql(): string {
   return `-- ==============================================================================
 -- SAW-TRAK: Skrypt PostgreSQL dla widoku v_model oraz triggerów INSTEAD OF
 -- Pozwala pracować wyłącznie na widoku v_model, automatycznie uzupełniając tabele Model_*
+-- Zawiera walidowane tabele słownikowe: Model_Rodzaj, Model_Gwarancja_Detal, Model_Gwarancja_Hurt
 -- ==============================================================================
 
--- 1. Upewnij się, że tabele bazowe Model_* istnieją w schemacie public
+-- 1. TABELE WALIDOWANE (SŁOWNIKOWE)
+CREATE TABLE IF NOT EXISTS public."Model_Rodzaj" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nazwa TEXT NOT NULL UNIQUE,
+    kod TEXT,
+    opis TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Gwarancja_Detal" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nazwa TEXT NOT NULL UNIQUE,
+    okres_miesiace INTEGER DEFAULT 12,
+    limit_mth INTEGER DEFAULT 1000,
+    zakres TEXT DEFAULT 'Pełny (B2C)',
+    opis TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Gwarancja_Hurt" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nazwa TEXT NOT NULL UNIQUE,
+    okres_miesiace INTEGER DEFAULT 6,
+    limit_mth INTEGER DEFAULT 1000,
+    warunki_b2b TEXT DEFAULT 'Podzespoły główne',
+    opis TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Upewnij się, że tabele bazowe Model_* istnieją w schemacie public
 CREATE TABLE IF NOT EXISTS public."Model_Podstawowy" (
     id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     nazwa_modelu TEXT NOT NULL,
     seria TEXT,
+    rodzaj TEXT REFERENCES public."Model_Rodzaj"(nazwa) ON UPDATE CASCADE,
     typ_napedu TEXT,
     rok_produkcji INTEGER,
     dostepnosc TEXT DEFAULT 'Dostępny od ręki',
@@ -991,6 +1204,14 @@ CREATE TABLE IF NOT EXISTS public."Model_Specyfikacja" (
     udzwig_kg NUMERIC,
     wysokosc_podnoszenia_mm NUMERIC,
     typ_masztu TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public."Model_Gwarancje" (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    model_id BIGINT REFERENCES public."Model_Podstawowy"(id) ON DELETE CASCADE UNIQUE,
+    gwarancja_detal TEXT REFERENCES public."Model_Gwarancja_Detal"(nazwa) ON UPDATE CASCADE,
+    gwarancja_hurt TEXT REFERENCES public."Model_Gwarancja_Hurt"(nazwa) ON UPDATE CASCADE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -1010,16 +1231,19 @@ CREATE TABLE IF NOT EXISTS public."Model_Multimedia" (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Utworzenie widoku v_model łączącego wszystkie tabele Model_*
+-- 3. Utworzenie widoku v_model łączącego wszystkie tabele Model_*
 CREATE OR REPLACE VIEW public.v_model AS
 SELECT 
     p.id,
     p.nazwa_modelu,
     p.seria,
+    p.rodzaj,
     p.typ_napedu,
     s.udzwig_kg,
     s.wysokosc_podnoszenia_mm,
     s.typ_masztu,
+    gw.gwarancja_detal,
+    gw.gwarancja_hurt,
     c.cena_netto_pln,
     c.waluta,
     p.rok_produkcji,
@@ -1028,17 +1252,18 @@ SELECT
     m.uwagi
 FROM public."Model_Podstawowy" p
 LEFT JOIN public."Model_Specyfikacja" s ON s.model_id = p.id
+LEFT JOIN public."Model_Gwarancje" gw ON gw.model_id = p.id
 LEFT JOIN public."Model_Ceny" c ON c.model_id = p.id
 LEFT JOIN public."Model_Multimedia" m ON m.model_id = p.id;
 
--- 3. Trigger INSTEAD OF INSERT: dodanie do v_model rozdziela dane do tabel Model_*
+-- 4. Trigger INSTEAD OF INSERT: dodanie do v_model rozdziela dane do tabel Model_*
 CREATE OR REPLACE FUNCTION trg_v_model_insert()
 RETURNS TRIGGER AS $$
 DECLARE
     new_model_id BIGINT;
 BEGIN
-    INSERT INTO public."Model_Podstawowy" (nazwa_modelu, seria, typ_napedu, rok_produkcji, dostepnosc)
-    VALUES (NEW.nazwa_modelu, NEW.seria, NEW.typ_napedu, NEW.rok_produkcji, COALESCE(NEW.dostepnosc, 'Dostępny od ręki'))
+    INSERT INTO public."Model_Podstawowy" (nazwa_modelu, seria, rodzaj, typ_napedu, rok_produkcji, dostepnosc)
+    VALUES (NEW.nazwa_modelu, NEW.seria, NEW.rodzaj, NEW.typ_napedu, NEW.rok_produkcji, COALESCE(NEW.dostepnosc, 'Dostępny od ręki'))
     RETURNING id INTO new_model_id;
 
     NEW.id := new_model_id;
@@ -1049,6 +1274,12 @@ BEGIN
         udzwig_kg = EXCLUDED.udzwig_kg,
         wysokosc_podnoszenia_mm = EXCLUDED.wysokosc_podnoszenia_mm,
         typ_masztu = EXCLUDED.typ_masztu;
+
+    INSERT INTO public."Model_Gwarancje" (model_id, gwarancja_detal, gwarancja_hurt)
+    VALUES (new_model_id, NEW.gwarancja_detal, NEW.gwarancja_hurt)
+    ON CONFLICT (model_id) DO UPDATE SET
+        gwarancja_detal = EXCLUDED.gwarancja_detal,
+        gwarancja_hurt = EXCLUDED.gwarancja_hurt;
 
     INSERT INTO public."Model_Ceny" (model_id, cena_netto_pln, waluta)
     VALUES (new_model_id, NEW.cena_netto_pln, COALESCE(NEW.waluta, 'PLN'))
@@ -1071,13 +1302,14 @@ CREATE TRIGGER trg_v_model_instead_of_insert
 INSTEAD OF INSERT ON public.v_model
 FOR EACH ROW EXECUTE FUNCTION trg_v_model_insert();
 
--- 4. Trigger INSTEAD OF UPDATE: edycja w v_model aktualizuje odpowiednie tabele Model_*
+-- 5. Trigger INSTEAD OF UPDATE: edycja w v_model aktualizuje odpowiednie tabele Model_*
 CREATE OR REPLACE FUNCTION trg_v_model_update()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE public."Model_Podstawowy" SET
         nazwa_modelu = COALESCE(NEW.nazwa_modelu, nazwa_modelu),
         seria = COALESCE(NEW.seria, seria),
+        rodzaj = COALESCE(NEW.rodzaj, rodzaj),
         typ_napedu = COALESCE(NEW.typ_napedu, typ_napedu),
         rok_produkcji = COALESCE(NEW.rok_produkcji, rok_produkcji),
         dostepnosc = COALESCE(NEW.dostepnosc, dostepnosc)
@@ -1089,6 +1321,12 @@ BEGIN
         udzwig_kg = COALESCE(EXCLUDED.udzwig_kg, public."Model_Specyfikacja".udzwig_kg),
         wysokosc_podnoszenia_mm = COALESCE(EXCLUDED.wysokosc_podnoszenia_mm, public."Model_Specyfikacja".wysokosc_podnoszenia_mm),
         typ_masztu = COALESCE(EXCLUDED.typ_masztu, public."Model_Specyfikacja".typ_masztu);
+
+    INSERT INTO public."Model_Gwarancje" (model_id, gwarancja_detal, gwarancja_hurt)
+    VALUES (OLD.id, NEW.gwarancja_detal, NEW.gwarancja_hurt)
+    ON CONFLICT (model_id) DO UPDATE SET
+        gwarancja_detal = COALESCE(EXCLUDED.gwarancja_detal, public."Model_Gwarancje".gwarancja_detal),
+        gwarancja_hurt = COALESCE(EXCLUDED.gwarancja_hurt, public."Model_Gwarancje".gwarancja_hurt);
 
     INSERT INTO public."Model_Ceny" (model_id, cena_netto_pln, waluta)
     VALUES (OLD.id, NEW.cena_netto_pln, COALESCE(NEW.waluta, 'PLN'))
@@ -1111,7 +1349,7 @@ CREATE TRIGGER trg_v_model_instead_of_update
 INSTEAD OF UPDATE ON public.v_model
 FOR EACH ROW EXECUTE FUNCTION trg_v_model_update();
 
--- 5. Trigger INSTEAD OF DELETE: usunięcie z v_model kaskadowo usuwa powiązane rekordy
+-- 6. Trigger INSTEAD OF DELETE: usunięcie z v_model kaskadowo usuwa powiązane rekordy
 CREATE OR REPLACE FUNCTION trg_v_model_delete()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -1125,12 +1363,20 @@ CREATE TRIGGER trg_v_model_instead_of_delete
 INSTEAD OF DELETE ON public.v_model
 FOR EACH ROW EXECUTE FUNCTION trg_v_model_delete();
 
--- 6. Włączenie RLS i dodanie uprawnień publicznych
+-- 7. Włączenie RLS i dodanie uprawnień publicznych
+ALTER TABLE public."Model_Rodzaj" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Gwarancja_Detal" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Gwarancja_Hurt" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Model_Gwarancje" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Model_Podstawowy" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Model_Specyfikacja" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Model_Ceny" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Model_Multimedia" ENABLE ROW LEVEL SECURITY;
 
+CREATE POLICY "Dostęp publiczny Model_Rodzaj" ON public."Model_Rodzaj" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Gwarancja_Detal" ON public."Model_Gwarancja_Detal" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Gwarancja_Hurt" ON public."Model_Gwarancja_Hurt" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Dostęp publiczny Model_Gwarancje" ON public."Model_Gwarancje" FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Dostęp publiczny Model_Podstawowy" ON public."Model_Podstawowy" FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Dostęp publiczny Model_Specyfikacja" ON public."Model_Specyfikacja" FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Dostęp publiczny Model_Ceny" ON public."Model_Ceny" FOR ALL USING (true) WITH CHECK (true);
@@ -1180,6 +1426,7 @@ export async function insertRow(tableName: string, rowData: Record<string, any>)
       const podstawowyPayload = {
         nazwa_modelu: rowData.nazwa_modelu || '',
         seria: rowData.seria || '',
+        rodzaj: rowData.rodzaj || null,
         typ_napedu: rowData.typ_napedu || '',
         rok_produkcji: rowData.rok_produkcji,
         dostepnosc: rowData.dostepnosc || 'Dostępny od ręki'
@@ -1199,6 +1446,14 @@ export async function insertRow(tableName: string, rowData: Record<string, any>)
           udzwig_kg: rowData.udzwig_kg,
           wysokosc_podnoszenia_mm: rowData.wysokosc_podnoszenia_mm,
           typ_masztu: rowData.typ_masztu
+        });
+      }
+
+      if (rowData.gwarancja_detal !== undefined || rowData.gwarancja_hurt !== undefined) {
+        await supabase.from('Model_Gwarancje').insert({
+          model_id: newId,
+          gwarancja_detal: rowData.gwarancja_detal,
+          gwarancja_hurt: rowData.gwarancja_hurt
         });
       }
 
@@ -1306,7 +1561,7 @@ export async function updateRow(
       // Decomposed update across Model_* base tables
       // 1. Model_Podstawowy
       const pData: Record<string, any> = {};
-      ['nazwa_modelu', 'seria', 'typ_napedu', 'rok_produkcji', 'dostepnosc'].forEach(k => {
+      ['nazwa_modelu', 'seria', 'rodzaj', 'typ_napedu', 'rok_produkcji', 'dostepnosc'].forEach(k => {
         if (updatedData[k] !== undefined) pData[k] = updatedData[k];
       });
       if (Object.keys(pData).length > 0) {
@@ -1322,7 +1577,20 @@ export async function updateRow(
         await supabase.from('Model_Specyfikacja').update(sData).eq('model_id', primaryKeyValue);
       }
 
-      // 3. Model_Ceny
+      // 3. Model_Gwarancje
+      const gData: Record<string, any> = {};
+      ['gwarancja_detal', 'gwarancja_hurt'].forEach(k => {
+        if (updatedData[k] !== undefined) gData[k] = updatedData[k];
+      });
+      if (Object.keys(gData).length > 0) {
+        const { error: gErr } = await supabase.from('Model_Gwarancje').update(gData).eq('model_id', primaryKeyValue);
+        if (gErr) {
+          // If not exists yet, insert
+          await supabase.from('Model_Gwarancje').insert({ model_id: primaryKeyValue, ...gData });
+        }
+      }
+
+      // 4. Model_Ceny
       const cData: Record<string, any> = {};
       ['cena_netto_pln', 'waluta'].forEach(k => {
         if (updatedData[k] !== undefined) cData[k] = updatedData[k];
@@ -1331,7 +1599,7 @@ export async function updateRow(
         await supabase.from('Model_Ceny').update(cData).eq('model_id', primaryKeyValue);
       }
 
-      // 4. Model_Multimedia
+      // 5. Model_Multimedia
       const mData: Record<string, any> = {};
       ['zdjecie_glowne', 'uwagi'].forEach(k => {
         if (updatedData[k] !== undefined) mData[k] = updatedData[k];

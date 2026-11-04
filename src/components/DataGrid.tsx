@@ -446,6 +446,14 @@ export const DataGrid: React.FC<DataGridProps> = ({
                   >
                     <div className={`inline-flex items-center gap-1.5 ${isNum ? 'flex-row-reverse' : ''}`}>
                       <span className="font-mono">{col.name}</span>
+                      {col.foreignKey?.table && (
+                        <span
+                          className="text-[9px] px-1 py-0.2 rounded font-mono font-semibold bg-amber-50 text-amber-800 border border-amber-200"
+                          title={`Klucz obcy z tabeli ${col.foreignKey.table}`}
+                        >
+                          FK
+                        </span>
+                      )}
                       <span className="text-[10px] text-gray-400 font-normal lowercase">
                         {col.dataType}
                       </span>
@@ -634,6 +642,14 @@ export const DataGrid: React.FC<DataGridProps> = ({
                           ) : col.dataType === 'json' ? (
                             <span className="font-mono text-[11px] text-gray-600">
                               {typeof val === 'object' ? JSON.stringify(val) : String(val)}
+                            </span>
+                          ) : col.name.toLowerCase() === 'rodzaj' ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-orange-50 text-orange-900 border border-orange-200/70">
+                              {String(val)}
+                            </span>
+                          ) : col.name.toLowerCase().includes('gwarancja') ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-800 border border-slate-200">
+                              {String(val)}
                             </span>
                           ) : (
                             <span className="text-gray-800">{String(val)}</span>

@@ -66,3 +66,11 @@ export interface ToastMessage {
   title: string;
   message?: string;
 }
+
+export interface ValidatedOption {
+  value: string;
+  label: string;
+  sourceTable: string;
+  description?: string;
+  details?: string;
+}
